@@ -1,0 +1,2 @@
+# sparty
+Le projet consiste en la réalisation d'une application de gestion de file d'attente Spotify. Cela permet par exemple lors d’une fête de laisser les invités contrôler la musique. L'application utilise l'API de Spotify. Le site est réalisé en PHP. Un utilisateur peut enregistrer un compte associé à son compte Spotify. Il peut également créer une nouvelle chambre, reliée à sa file d'attente. Il partage alors le lien de la salle à ses invités. Ces derniers peuvent alors rechercher de la musique sur le site et la mettre en file d'attente.
