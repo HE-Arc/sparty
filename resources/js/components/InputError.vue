@@ -1,13 +1,13 @@
 <template>
-    <div v-show="message">
-        <p class="text-sm text-red-600">
-            {{ message }}
-        </p>
-    </div>
+  <div v-show="message" class="invalid-feedback" role="alert">
+    <strong>{{ message }}</strong>
+  </div>
 </template>
 
 <script>
-export default {
+  import { defineComponent } from 'vue'
+
+  export default defineComponent({
     props: ['message']
-}
+  })
 </script>
