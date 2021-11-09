@@ -25,7 +25,16 @@ class UserController extends Controller
         $code = $request->input('code');
 
         $spotify = new SpotifyService();
-        $spotify->getRefresh($code);
+        $refresh = $spotify->getRefresh($code);
+
+        if (!$refresh)
+        {
+            return;
+        }
+
+        $spotify = new SpotifyService($refresh);
+
+        $spotify->addToQueue('spotify:track:4cOdK2wGLETKBW3PvgPWqT');
     }
 
     /**
