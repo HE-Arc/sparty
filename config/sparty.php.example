@@ -1,0 +1,6 @@
+<?php
+
+return [
+    'spotify_id' => 'blablabla', // The client_id from Spotify API 
+    'spotify_secret' => 'bloubloublou', // The client_secret from Spotify API 
+];

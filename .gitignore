@@ -13,6 +13,7 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+/config/sparty.php
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/laravel,vuejs
