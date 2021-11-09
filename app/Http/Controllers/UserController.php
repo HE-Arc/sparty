@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\SpotifyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
 {
@@ -14,8 +16,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return inertia("Sparty/User/Index", compact("users"));
+        $spotify = new SpotifyService();
+        return $spotify->redirect();
+    }
+
+    public function getRefresh(Request $request)
+    {
+        $code = $request->input('code');
+
+        $spotify = new SpotifyService();
+        $spotify->getRefresh($code);
     }
 
     /**
