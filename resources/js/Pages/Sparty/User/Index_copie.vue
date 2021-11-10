@@ -1,10 +1,6 @@
 <template>
-  <Head title="Création de compte" />
+  <Head title="Welcome" />
 
-<div>
-    <breeze-application-logo width="80" />
-    <h1>CREATION DE COMPTE</h1>
-</div>
   <div>
     <div v-for="user in users" :key="user.id">
         <p>{{user.username}}</p>
@@ -13,12 +9,10 @@
 </template>
 
 <script>
-import BreezeApplicationLogo from '@/Components/TestLogo.vue'
 import { Head, Link } from "@inertiajs/inertia-vue3";
 
 export default {
   components: {
-    BreezeApplicationLogo,
     Head,
     Link
   },
