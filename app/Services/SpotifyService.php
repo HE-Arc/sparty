@@ -13,12 +13,19 @@ class SpotifyService
     private $id;
     private $secret;
     private $refresh;
+    private $successful;
 
     public function __construct(string $refresh = null)
     {
         $this->id = config('sparty.spotify_id');
         $this->secret = config('sparty.spotify_secret');
         $this->refresh = $refresh;
+        $this->successful = false;
+    }
+
+    public function isSuccessful()
+    {
+        return $this->successful;
     }
 
     /**
@@ -63,16 +70,19 @@ class SpotifyService
         }
         catch (GuzzleException $e)
         {
+            $this->successful = false;
             return null;
         }
 
         $results = json_decode($response->getBody(), true);
 
-        if (isset($results["refresh_token"]))
+        if (isset($results['refresh_token']))
         {
-            return $results["refresh_token"];
+            $this->successful = true;
+            return $results['refresh_token'];
         }
 
+        $this->successful = false;
         return null;
     }
 
@@ -98,16 +108,19 @@ class SpotifyService
         }
         catch (GuzzleException $e)
         {
+            $this->successful = false;
             return null;
         }
 
         $results = json_decode($response->getBody(), true);
 
-        if (isset($results["access_token"]))
+        if (isset($results['access_token']))
         {
-            return $results["access_token"];
+            $this->successful = true;
+            return $results['access_token'];
         }
 
+        $this->successful = false;
         return null;
     }
 
@@ -117,6 +130,7 @@ class SpotifyService
 
         if (!$access)
         {
+            $this->successful = false;
             return;
         }
 
@@ -134,11 +148,72 @@ class SpotifyService
        
         try
         {
-            $response = $client->request('POST', $endpoint, ['query' => $query, 'headers' => $headers]);
+            $client->request('POST', $endpoint, ['query' => $query, 'headers' => $headers]);
+            $this->successful = true;
         }
         catch (GuzzleException $e)
         {
+            $this->successful = false;
             return;
         }
+    }
+
+    public function searchTrack($trackName, $tracksByPage = 12, $pageNb = 0)
+    {
+        $access = $this->getAccess();
+
+        if (!$access)
+        {
+            $this->successful = false;
+            return;
+        }
+
+        $endpoint = 'https://api.spotify.com/v1/search';
+
+        $query = [
+            'q' => $trackName,
+            'type' => 'track',
+            'limit' => $tracksByPage,
+            'offset' => $tracksByPage * $pageNb
+        ];
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $access
+        ];
+
+        $client = new \GuzzleHttp\Client();
+
+        try
+        {
+            $response = $client->request('GET', $endpoint, ['query' => $query, 'headers' => $headers]);
+        }
+        catch (GuzzleException $e)
+        {
+            $this->successful = false;
+            return null;
+        }
+
+        $results = json_decode($response->getBody(), true);
+
+        if (!isset($results['tracks']['items']))
+        {
+            $this->successful = false;
+            return $results['tracks"]["items'];
+        }
+
+        $toReturn = [];
+
+        foreach ($results['tracks']['items'] as $track)
+        {
+            array_push($toReturn, [
+                'uri' => $track['uri'],
+                'image' => $track['album']['images'][1]['url'],
+                'name' => $track['name'],
+                'artist' => $track['artists'][0]['name']
+            ]);
+        }
+
+        $this->successful = true;
+        return $toReturn;
     }
 }
