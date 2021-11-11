@@ -2,34 +2,45 @@
 
 namespace App\Services;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
-use PhpParser\Node\Stmt\TryCatch;
-use Ramsey\Uuid\Guid\Fields;
 
+/**
+ * A service class to use the Spotify API
+ */
 class SpotifyService
 {
     private $id;
     private $secret;
-    private $refresh;
-    private $successful;
 
+    private $refresh;
+    private $access;
+
+    private $client;
+
+    /**
+     * Construct the SpotifyService
+     * @param string $refresh the refresh code of the user
+     */
     public function __construct(string $refresh = null)
     {
         $this->id = config('sparty.spotify_id');
         $this->secret = config('sparty.spotify_secret');
-        $this->refresh = $refresh;
-        $this->successful = false;
-    }
 
-    public function isSuccessful()
-    {
-        return $this->successful;
+        $this->client = new Client();
+
+        $this->refresh = $refresh;
+        $this->access = null;
+
+        if ($refresh)
+        {
+            $this->access = $this->getAccess();
+        }
     }
 
     /**
      * Redirect to the Spotify connection page
+     * @return \Illuminate\Http\RedirectResponse the redirecton to the Spotify connection
      */
     public function redirect()
     {
@@ -43,9 +54,9 @@ class SpotifyService
     }
 
     /**
-     * Fetch the refresh token from  Spotify API
+     * Fetch the refresh token from Spotify API
      * @param string $code the code received after the redirect
-     * @return string the refresh token or null
+     * @return string|null the refresh token or null if failed
      */
     public function getRefresh($code)
     {
@@ -61,16 +72,14 @@ class SpotifyService
             'Authorization' => 'Basic ' . base64_encode($this->id . ':' . $this->secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
-
-        $client = new \GuzzleHttp\Client();
        
         try
         {
-            $response = $client->request('POST', $endpoint, ['query' => $query, 'headers' => $headers]);
+            $response = $this->client->request('POST', $endpoint,
+                    ['query' => $query, 'headers' => $headers]);
         }
         catch (GuzzleException $e)
         {
-            $this->successful = false;
             return null;
         }
 
@@ -78,14 +87,19 @@ class SpotifyService
 
         if (isset($results['refresh_token']))
         {
-            $this->successful = true;
+            $this->refresh = $results['refresh_token'];
+            $this->access = $this->getAccess();
+
             return $results['refresh_token'];
         }
 
-        $this->successful = false;
         return null;
     }
 
+    /**
+     * Fetch the access token from Spotify API using the refresh token
+     * @return string|null the access token or null if failed
+     */
     private function getAccess()
     {
         $endpoint = 'https://accounts.spotify.com/api/token';
@@ -99,16 +113,14 @@ class SpotifyService
             'Authorization' => 'Basic ' . base64_encode($this->id . ':' . $this->secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
-
-        $client = new \GuzzleHttp\Client();
        
         try
         {
-            $response = $client->request('POST', $endpoint, ['query' => $query, 'headers' => $headers]);
+            $response = $this->client->request('POST', $endpoint,
+                    ['query' => $query, 'headers' => $headers]);
         }
         catch (GuzzleException $e)
         {
-            $this->successful = false;
             return null;
         }
 
@@ -116,22 +128,22 @@ class SpotifyService
 
         if (isset($results['access_token']))
         {
-            $this->successful = true;
             return $results['access_token'];
         }
 
-        $this->successful = false;
         return null;
     }
 
+    /**
+     * Add the given track to the Spotify queue
+     * @param string $uri the Spotify uri of the track
+     * @return bool whether the track was added
+     */
     public function addToQueue($uri)
     {
-        $access = $this->getAccess();
-
-        if (!$access)
+        if (!$this->access)
         {
-            $this->successful = false;
-            return;
+            return false;
         }
 
         $endpoint = 'https://api.spotify.com/v1/me/player/queue';
@@ -141,31 +153,48 @@ class SpotifyService
         ];
 
         $headers = [
-            'Authorization' => 'Bearer ' . $access
+            'Authorization' => 'Bearer ' . $this->access
         ];
 
-        $client = new \GuzzleHttp\Client();
-       
         try
         {
-            $client->request('POST', $endpoint, ['query' => $query, 'headers' => $headers]);
-            $this->successful = true;
+            $this->client->request('POST', $endpoint, ['query' => $query, 'headers' => $headers]);
         }
         catch (GuzzleException $e)
         {
-            $this->successful = false;
-            return;
+            return false;
         }
+
+        return true;
     }
 
+    /**
+     * Simplify the given Spotify item
+     * @param array $item the Spotify item from the API
+     * @return array the item as a more simple array
+     */
+    private function itemToArray($item)
+    {
+        return [
+            'name' => $item['name'],
+            'artist' => $item['artists'][0]['name'],
+            'uri' => $item['uri'],
+            'image' => $item['album']['images'][1]['url']
+        ];
+    }
+
+    /**
+     * Search for a given track on Spotify
+     * @param string $trackName the name of the track
+     * @param int $tracksByPage the number of tracks per page
+     * @param int $tracksByPage the page of the search
+     * @return array|null list of tracks found or null if failed
+     */
     public function searchTrack($trackName, $tracksByPage = 12, $pageNb = 0)
     {
-        $access = $this->getAccess();
-
-        if (!$access)
+        if (!$this->access)
         {
-            $this->successful = false;
-            return;
+            return null;
         }
 
         $endpoint = 'https://api.spotify.com/v1/search';
@@ -178,18 +207,16 @@ class SpotifyService
         ];
 
         $headers = [
-            'Authorization' => 'Bearer ' . $access
+            'Authorization' => 'Bearer ' . $this->access
         ];
-
-        $client = new \GuzzleHttp\Client();
 
         try
         {
-            $response = $client->request('GET', $endpoint, ['query' => $query, 'headers' => $headers]);
+            $response = $this->client->request('GET', $endpoint,
+                    ['query' => $query, 'headers' => $headers]);
         }
         catch (GuzzleException $e)
         {
-            $this->successful = false;
             return null;
         }
 
@@ -197,23 +224,76 @@ class SpotifyService
 
         if (!isset($results['tracks']['items']))
         {
-            $this->successful = false;
-            return $results['tracks"]["items'];
+            return null;
         }
 
         $toReturn = [];
 
-        foreach ($results['tracks']['items'] as $track)
+        foreach ($results['tracks']['items'] as $item)
         {
-            array_push($toReturn, [
-                'uri' => $track['uri'],
-                'image' => $track['album']['images'][1]['url'],
-                'name' => $track['name'],
-                'artist' => $track['artists'][0]['name']
-            ]);
+            array_push($toReturn, $this->itemToArray($item));
         }
 
-        $this->successful = true;
         return $toReturn;
+    }
+
+    /**
+     * Skip the current track playing
+     * @return bool whether the track was skipped
+     */
+    public function skipTrack()
+    {
+        if (!$this->access)
+        {
+            return false;
+        }
+
+        $endpoint = 'https://api.spotify.com/v1/me/player/next';
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+        
+        try
+        {
+            $this->client->request('POST', $endpoint, ['headers' => $headers]);
+        }
+        catch (GuzzleException $e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Show the track currently playing on Spotify
+     * @return array|null the track currently playing or null if failed
+     */
+    public function currentlyPlaying()
+    {
+        $endpoint = 'https://api.spotify.com/v1/me/player/currently-playing';
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+        
+        try
+        {
+            $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
+        }
+        catch (GuzzleException $e)
+        {
+            return null;
+        }
+
+        $results = json_decode($response->getBody(), true);
+
+        if (isset($results['item']))
+        {
+            return $this->itemToArray($results['item']);
+        }
+
+        return null;
     }
 }

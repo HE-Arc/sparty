@@ -32,11 +32,13 @@ class UserController extends Controller
             return;
         }
 
-        $spotify = new SpotifyService($refresh);
+        print_r($spotify->currentlyPlaying());
 
-        $spotify->addToQueue('spotify:track:4cOdK2wGLETKBW3PvgPWqT');
+        $search = $spotify->searchTrack('Never gonna give');
+        print_r($search);
 
-        print_r($spotify->searchTrack('Never gonna'));
+        $spotify->addToQueue($search[0]['uri']);
+        $spotify->skipTrack();
     }
 
     /**
