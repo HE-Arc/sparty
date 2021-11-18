@@ -31,4 +31,6 @@ Route::get('/dashboard', function () {
 
 Route::resource("/user", UserController::class);
 
+Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
+
 require __DIR__.'/auth.php';
