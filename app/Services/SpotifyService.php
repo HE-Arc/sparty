@@ -23,14 +23,13 @@ class SpotifyService
      * Construct the SpotifyService
      * @param string $refresh the refresh code of the user
      */
-    public function __construct($user_id = null, $refresh = null)
+    public function __construct($refresh = null)
     {
         $this->api_id = config('sparty.spotify_id');
         $this->api_secret = config('sparty.spotify_secret');
 
         $this->client = new Client();
 
-        $this->user_id = $user_id;
         $this->refresh = $refresh;
         $this->access = null;
 
