@@ -32,13 +32,16 @@ class UserController extends Controller
             return;
         }
 
-        print_r($spotify->currentlyPlaying());
+        $playlist_id = $spotify->createPlaylist('Sparty test');
+        $time_time = $spotify->searchTrack('Time time');
 
-        $search = $spotify->searchTrack('Never gonna give');
-        print_r($search);
+        foreach ($time_time as $track)
+        {
+            $spotify->addToPlaylist($playlist_id, $track['uri']);
+        }
 
-        $spotify->addToQueue($search[0]['uri']);
-        $spotify->skipTrack();
+        $spotify->setShuffle();
+        $spotify->playPlaylist($playlist_id);
     }
 
     /**

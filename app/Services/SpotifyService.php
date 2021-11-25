@@ -10,9 +10,10 @@ use GuzzleHttp\Exception\GuzzleException;
  */
 class SpotifyService
 {
-    private $id;
-    private $secret;
+    private $api_id;
+    private $api_secret;
 
+    private $user_id;
     private $refresh;
     private $access;
 
@@ -22,19 +23,21 @@ class SpotifyService
      * Construct the SpotifyService
      * @param string $refresh the refresh code of the user
      */
-    public function __construct(string $refresh = null)
+    public function __construct($user_id = null, $refresh = null)
     {
-        $this->id = config('sparty.spotify_id');
-        $this->secret = config('sparty.spotify_secret');
+        $this->api_id = config('sparty.spotify_id');
+        $this->api_secret = config('sparty.spotify_secret');
 
         $this->client = new Client();
 
+        $this->user_id = $user_id;
         $this->refresh = $refresh;
         $this->access = null;
 
         if ($refresh)
         {
             $this->access = $this->getAccess();
+            $this->user_id = $this->getUserId();
         }
     }
 
@@ -45,10 +48,11 @@ class SpotifyService
     public function redirect()
     {
         $redirect = route('code');
+        $scope = "user-modify-playback-state+user-read-currently-playing+user-read-playback-state+playlist-modify-private";
         
-        $url = url("https://accounts.spotify.com/authorize?client_id={$this->id}"
+        $url = url("https://accounts.spotify.com/authorize?client_id={$this->api_id}"
                 . "&response_type=code&redirect_uri={$redirect}"
-                . "&scope=user-modify-playback-state+user-read-currently-playing+user-read-playback-state");
+                . "&scope={$scope}");
 
         return redirect()->away($url);
     }
@@ -69,7 +73,7 @@ class SpotifyService
         ];
 
         $headers = [
-            'Authorization' => 'Basic ' . base64_encode($this->id . ':' . $this->secret),
+            'Authorization' => 'Basic ' . base64_encode($this->api_id . ':' . $this->api_secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
        
@@ -89,6 +93,7 @@ class SpotifyService
         {
             $this->refresh = $results['refresh_token'];
             $this->access = $this->getAccess();
+            $this->user_id = $this->getUserId();
 
             return $results['refresh_token'];
         }
@@ -110,7 +115,7 @@ class SpotifyService
         ];
 
         $headers = [
-            'Authorization' => 'Basic ' . base64_encode($this->id . ':' . $this->secret),
+            'Authorization' => 'Basic ' . base64_encode($this->api_id . ':' . $this->api_secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
        
@@ -129,6 +134,79 @@ class SpotifyService
         if (isset($results['access_token']))
         {
             return $results['access_token'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch the id of the user associated to the refresh code
+     * @return string|null the user id or null if failed
+     */
+    private function getUserId()
+    {
+        if (!$this->access)
+        {
+            return null;
+        }
+
+        $endpoint = 'https://api.spotify.com/v1/me';
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+       
+        try
+        {
+            $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
+        }
+        catch (GuzzleException $e)
+        {
+            return null;
+        }
+
+        $results = json_decode($response->getBody(), true);
+
+        if (isset($results['id']))
+        {
+            return $results['id'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch the name of the user associated to the refresh code
+     * @return string|null the username or null if failed
+     */
+    public function getUserName()
+    {
+        if (!$this->access)
+        {
+            return null;
+        }
+
+        $endpoint = 'https://api.spotify.com/v1/me';
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+       
+        try
+        {
+            $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
+        }
+        catch (GuzzleException $e)
+        {
+            return null;
+        }
+
+        $results = json_decode($response->getBody(), true);
+
+        if (isset($results['display_name']))
+        {
+            $this->user_id = $results['id'];
+            return $results['display_name'];
         }
 
         return null;
@@ -186,11 +264,11 @@ class SpotifyService
     /**
      * Search for a given track on Spotify
      * @param string $trackName the name of the track
+     * @param int $pageNb the page of the search
      * @param int $tracksByPage the number of tracks per page
-     * @param int $tracksByPage the page of the search
      * @return array|null list of tracks found or null if failed
      */
-    public function searchTrack($trackName, $tracksByPage = 12, $pageNb = 0)
+    public function searchTrack($trackName, $pageNb = 0, $tracksByPage = 12)
     {
         if (!$this->access)
         {
@@ -272,6 +350,11 @@ class SpotifyService
      */
     public function currentlyPlaying()
     {
+        if (!$this->access)
+        {
+            return null;
+        }
+
         $endpoint = 'https://api.spotify.com/v1/me/player/currently-playing';
 
         $headers = [
@@ -295,5 +378,324 @@ class SpotifyService
         }
 
         return null;
+    }
+
+    /**
+     * Create a new playlist with a given name
+     * @param string $name the name of the playlist
+     * @return string|null the id of the playlist or null if failed
+     */
+    public function createPlaylist($name)
+    {
+        if (!$this->access || !$this->user_id)
+        {
+            return null;
+        }
+
+        $endpoint = url("https://api.spotify.com/v1/users/{$this->user_id}/playlists");
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+
+        $json = [
+            'name' => $name,
+            'public' => 'false'
+        ];
+        
+        try
+        {
+            $response = $this->client->request('POST', $endpoint,
+                    ['headers' => $headers, 'json' => $json]);
+        }
+        catch (GuzzleException $e)
+        {
+            return null;
+        }
+
+        $results = json_decode($response->getBody(), true);
+
+        if (isset($results['id']))
+        {
+            return $results['id'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch the uri of the playlist given
+     * @param string $playlist_id the id of the playlist
+     * @return string|null the uri of the playlist or null if failed
+     */
+    private function getPlaylistUri($playlist_id)
+    {
+        if (!$this->access)
+        {
+            return null;
+        }
+
+        $endpoint = url("https://api.spotify.com/v1/playlists/{$playlist_id}");
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+
+        try
+        {
+            $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
+        }
+        catch (GuzzleException $e)
+        {
+            return null;
+        }
+
+        $results = json_decode($response->getBody(), true);
+
+        if (isset($results['uri']))
+        {
+            return $results['uri'];
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the offset the track in the given playlist
+     * @param string $playlist_id the id of the playlist
+     * @param string $track_uri the uri of the track
+     * @return int|null the offset of the the track or null if failed
+     */
+    public function findOffsetInPlaylist($playlist_id, $track_uri)
+    {
+        if (!$this->access)
+        {
+            return null;
+        }
+
+        $offset = 0;
+
+        while (true)
+        {
+            $tracks = $this->getNextTracks($playlist_id, $offset, 50);
+
+            if (count($tracks) == 0)
+            {
+                return null;
+            }
+
+            foreach ($tracks as $track)
+            {
+                if ($track['uri'] == $track_uri)
+                {
+                    return $offset;
+                }
+
+                ++$offset;
+            }
+        }
+    }
+
+    /**
+     * Return the next n tracks of the playlist after the offset
+     * @param string $playlist_id the id of the playlist
+     * @param int $offset the offset in the playlist
+     * @param int $max the max number of tracks to return, <= 50
+     * @return array|null the next tracks or null if failed
+     */
+    public function getNextTracks($playlist_id, $offset = 0, $max = 10)
+    {
+        if (!$this->access)
+        {
+            return null;
+        }
+
+        $endpoint = url("https://api.spotify.com/v1/playlists/{$playlist_id}/tracks");
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+
+        $query = [
+            'offset' => $offset,
+            'max' => $max
+        ];
+
+        try
+        {
+            $response = $this->client->request('GET', $endpoint,
+                    ['headers' => $headers, 'query' => $query]);
+        }
+        catch (GuzzleException $e)
+        {
+            return null;
+        }
+
+        $results = json_decode($response->getBody(), true);
+
+        if (!isset($results['items']))
+        {
+            return null;
+        }
+
+        $toReturn = [];
+
+        foreach ($results['items'] as $item)
+        {
+            array_push($toReturn, $this->itemToArray($item['track']));
+        }
+
+        return $toReturn;
+    }
+
+    /**
+     * Add the given track at the end of the playlist
+     * @param string $playlist_id the id of the playlist
+     * @param string $track_uri the uri of the track to be added
+     * @return bool whether the track was added
+     */
+    public function addToPlaylist($playlist_id, $track_uri)
+    {
+        if (!$this->access)
+        {
+            return false;
+        }
+
+        $endpoint = url("https://api.spotify.com/v1/playlists/{$playlist_id}/tracks");
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+
+        $json = [
+            'uris' => [$track_uri]
+        ];
+        
+        try
+        {
+            $this->client->request('POST', $endpoint,
+                    ['headers' => $headers, 'json' => $json]);
+        }
+        catch (GuzzleException $e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Play the given playlist
+     * @param string $playlist_id the id of the playlist
+     * @return bool whether the playlist was played
+     */
+    public function playPlaylist($playlist_id)
+    {
+        if (!$this->access)
+        {
+            return false;
+        }
+
+        $uri = $this->getPlaylistUri($playlist_id);
+
+        if (!$uri)
+        {
+            return false;
+        }
+
+        $endpoint = 'https://api.spotify.com/v1/me/player/play';
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+
+        $json = [
+            'context_uri' => $uri
+        ];
+
+        try
+        {
+            $this->client->request('PUT', $endpoint,
+                    ['headers' => $headers, 'json' => $json]);
+        }
+        catch (GuzzleException $e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Set the currently playing flux shuffle mode
+     * @param bool $shuffle whether to shuffle or not
+     * @return bool whether the shuffle mode was set
+     */
+    public function setShuffle($shuffle = false)
+    {
+        if (!$this->access)
+        {
+            return false;
+        }
+
+        $endpoint = url("https://api.spotify.com/v1/me/player/shuffle");
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+
+        $query = [
+            'state' => var_export($shuffle, true)
+        ];
+        
+        try
+        {
+            $this->client->request('PUT', $endpoint,
+                    ['headers' => $headers, 'query' => $query]);
+        }
+        catch (GuzzleException $e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Remove the given track from the playlist
+     * @param string $playlist_id the id of the playlist
+     * @param string $track_uri the uri of the track to remove
+     * @return bool whether the track was removed
+     */
+    public function removeFromPlaylist($playlist_id, $track_uri)
+    {
+        if (!$this->access)
+        {
+            return false;
+        }
+
+        $endpoint = url("https://api.spotify.com/v1/playlists/{$playlist_id}/tracks");
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->access
+        ];
+
+        $json = [
+            'tracks' => [[
+                'uri' => $track_uri
+            ]]
+        ];
+        
+        try
+        {
+            $this->client->request('DELETE', $endpoint,
+                    ['headers' => $headers, 'json' => $json]);
+        }
+        catch (GuzzleException $e)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
