@@ -45,7 +45,7 @@ class SpotifyService
     public function redirect()
     {
         $redirect = route('code');
-        
+
         $url = url("https://accounts.spotify.com/authorize?client_id={$this->id}"
                 . "&response_type=code&redirect_uri={$redirect}"
                 . "&scope=user-modify-playback-state+user-read-currently-playing+user-read-playback-state");
@@ -72,7 +72,7 @@ class SpotifyService
             'Authorization' => 'Basic ' . base64_encode($this->id . ':' . $this->secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
-       
+
         try
         {
             $response = $this->client->request('POST', $endpoint,
@@ -113,7 +113,7 @@ class SpotifyService
             'Authorization' => 'Basic ' . base64_encode($this->id . ':' . $this->secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
-       
+
         try
         {
             $response = $this->client->request('POST', $endpoint,
@@ -253,7 +253,7 @@ class SpotifyService
         $headers = [
             'Authorization' => 'Bearer ' . $this->access
         ];
-        
+
         try
         {
             $this->client->request('POST', $endpoint, ['headers' => $headers]);
@@ -277,7 +277,7 @@ class SpotifyService
         $headers = [
             'Authorization' => 'Bearer ' . $this->access
         ];
-        
+
         try
         {
             $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
