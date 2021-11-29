@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guest;
 use App\Models\User;
 use App\Services\SpotifyService;
 use Illuminate\Http\Request;
@@ -16,14 +17,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        $spotify = new SpotifyService();
-        return $spotify->redirect();
+        print(Guest::generateName());
     }
 
     public function getRefresh(Request $request)
     {
         $code = $request->input('code');
-
+        
         $spotify = new SpotifyService();
         $refresh = $spotify->getRefresh($code);
     
