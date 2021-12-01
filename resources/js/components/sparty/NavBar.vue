@@ -9,8 +9,9 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav ms-auto">
-        <a class="nav-link text-white" href="route('user.index')">UserPage</a>
-        <a class="nav-link text-white" href='route("login")'>Login</a>
+        <a class="nav-link text-white" href='user'>UserPage</a>
+        <a class="nav-link text-white" href='user'>Login</a>
+        <a class="nav-link text-white" href='logout'>Logout</a>
       </div>
     </div>
   </div>

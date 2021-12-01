@@ -1,32 +1,33 @@
 <template>
-  <Head title="User Page" />
   <nav-bar></nav-bar>
-  <h1>User</h1>
+  <Head title="User Page" />
 
-    <div class="container-md">
-        <form>
-            <div class="form-group mb-3">
-                <label for="username" class="titleLabel">Username : </label>
-                <input id="username" type="text">
-                <button class="btn btn-dark">Modifiy</button>
-            </div>
-        </form>
-        <form>
-            <div class="form-group mb-3">
-                <label for="password" class="titleLabel">Password : </label>
-                <input name="password">
-                <button class="btn btn-dark">Modifiy</button>
-            </div>
-        </form>
-        <form>
-            <div class="form-group mb-3">
-                <label for="spotify" class="titleLabel">Spotify : </label>
-                <button class="btn btn-dark" type="button">CONNECT</button>
-            </div>
-        </form>
-        <breeze-button type="reset" class="ms-4">
-            Log in
-        </breeze-button>
+  <h1 class="text-center">{{username}}</h1>
+
+    <div class="text-center">
+        <div class="container-md">
+            <form>
+                <div class="form-group mb-3">
+                    <label for="username" class="titleLabel">Username : </label>
+                    <input id="username" type="text" class="mx-3">
+                    <button class="btn btn-dark">Modifiy</button>
+                </div>
+            </form>
+            <form>
+                <div class="form-group mb-3">
+                    <label for="password" class="titleLabel">Password : </label>
+                    <input id="password" type="password" class="mx-3">
+                    <button class="btn btn-dark">Modifiy</button>
+                </div>
+            </form>
+            <form>
+                <div class="form-group mb-3">
+                    <label for="spotify" class="titleLabel">Spotify : </label>
+                    <input id="spotify" type="text" class="mx-3">
+                    <button class="btn btn-dark" type="button">CONNECT</button>
+                </div>
+            </form>
+        </div>
     </div>
 
 </template>
@@ -45,7 +46,7 @@ export default {
   },
 
   props: [
-      "user"
+      "username"
   ],
 };
 </script>

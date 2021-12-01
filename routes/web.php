@@ -24,6 +24,6 @@ Route::get('/dashboard', function () {
 Route::resource("/user", UserController::class);
 
 Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
-Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLogin');
+Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');
