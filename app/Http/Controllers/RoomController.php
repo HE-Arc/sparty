@@ -13,7 +13,8 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
+        //$books = Book::with('author')->latest()->paginate(5);
+        return inertia('Sparty/Room/Index');
     }
 
     /**
