@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\SpotifyService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
+
 
 class RoomController extends Controller
 {
@@ -16,6 +21,19 @@ class RoomController extends Controller
         //$books = Book::with('author')->latest()->paginate(5);
         return inertia('Sparty/Room/Index');
     }
+
+    public function search(Request $request)
+    {
+
+        $trackname = $request->validate([
+            'search' => 'required'
+        ]);
+
+        $spotify = new SpotifyService();
+        $spotify->searchTrack($trackname);
+        return Inertia::render('Sparty/Room/Test', $trackname);
+    }
+
 
     /**
      * Show the form for creating a new resource.
