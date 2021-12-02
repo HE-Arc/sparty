@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room;
+use App\Services\SpotifyService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
+
 
 class RoomController extends Controller
 {
@@ -14,11 +18,20 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $room = Room::first();
-        $guest = $room->createGuest();
-        var_dump($room->addMusic("spotify:track:5wKDPtbdggE1roeVp3UdXX", $guest->id));
-        var_dump($room->banGuest($guest->id));
+        //$books = Book::with('author')->latest()->paginate(5);
+        return inertia('Sparty/Room/Index');
     }
+
+    public function search(Request $request)
+    {
+
+        $trackname = $request->input('search');
+        $spotify = new SpotifyService('AQABx70EHUSdRmSalwLIWKoFQene74RV9OfeX6Ixczd9bvLc8uzhiqxSQChESYEn53JwYzlzFMD85-hZFo_AM8aRup4e8n6pLkySExiFTutsKzbpPfb-D-ZWAvtVrPJVWpc');
+        $searchResult = $spotify->searchTrack($trackname);
+        $result = compact('searchResult');
+        return Inertia::render('Sparty/Room/Search',$result);
+    }
+
 
     /**
      * Show the form for creating a new resource.

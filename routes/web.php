@@ -23,8 +23,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource("/user", UserController::class);
-Route::resource("/room", RoomController::class);
-
+Route::resource('/room', RoomController::class);
+Route::post('/search', [RoomController::class, 'search'])->name('search');
 Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLogin');
