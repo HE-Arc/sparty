@@ -8,7 +8,26 @@
     </div>
    <div class="container">
         <div class="row">
-            <div class="col-md-12"><h1 class="text-center">RoomName</h1></div>
+            <div class="col-md-12"><h1 class="text-center">RoomName</h1>
+             <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Artist</th>
+                        <th scope="col">URI</th>
+                        <th scope="col">IMAGE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--<tr v-for="data in searchResult.data" :key="data.id">
+                        <td>{{data.name ?? "Auteur manquant..."}}</td>
+                        <td>{{data.artist ?? "Auteur manquant..."}}</td>
+                        <td>{{data.uri ?? "Auteur manquant..."}}</td>
+                        <td>{{data.image ?? "Auteur manquant..."}}</td>
+                    </tr>-->
+                </tbody>
+            </table>
+            </div>
             <div class="col-md-12">
                 <h1 class="text-center"></h1>
             </div>
