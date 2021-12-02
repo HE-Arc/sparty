@@ -15,13 +15,8 @@ class RoomController extends Controller
     public function index()
     {
         $room = Room::first();
-        //$room->spotify->playPlaylist($room->playlist_id);
-
-        $first_uri = $room->spotify->searchTrack("Amir")[0]['uri'];
-        $second_uri = $room->spotify->searchTrack("Time time")[0]['uri'];
-
-        $room->addInPlaylist($first_uri);
-        $room->addInPlaylist($second_uri);
+        $guest = $room->createGuest();
+        $room->addMusic("spotify:track:5wKDPtbdggE1roeVp3UdXX", $guest->id);
     }
 
     /**

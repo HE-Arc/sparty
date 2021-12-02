@@ -17,7 +17,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        print(Guest::generateName());
+        $spotify = new SpotifyService();
+        return $spotify->redirect();
     }
 
     public function getRefresh(Request $request)
@@ -33,15 +34,8 @@ class UserController extends Controller
         }
 
         $playlist_id = $spotify->createPlaylist('Sparty test');
-        $time_time = $spotify->searchTrack('Time time');
-
-        foreach ($time_time as $track)
-        {
-            $spotify->addToPlaylist($playlist_id, $track['uri']);
-        }
-
-        $spotify->setShuffle();
-        $spotify->playPlaylist($playlist_id);
+        var_dump($playlist_id);
+        var_dump($refresh);
     }
 
     /**

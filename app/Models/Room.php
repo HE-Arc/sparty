@@ -27,11 +27,11 @@ class Room extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function addInPlaylist($uri)
+    private function addInPlaylist($uri)
     {
         $offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri);
 
-        if ($offset == null)
+        if ($offset === null)
         {
             return $this->spotify->addToPlaylist($this->playlist_id, $uri);
         }
@@ -82,5 +82,50 @@ class Room extends Model
         {
             $this->spotify->skipTrack();
         }
+    }
+
+    public function createGuest()
+    {
+        $guest = new Guest;
+        $guest->name = Guest::generateName();
+        $guest->room_id = $this->id;
+
+        $guest->save();
+        return $guest;
+    }
+
+    public function addMusic($uri, $guest_id)
+    {
+        $guest = Guest::where('id', '=', $guest_id)
+                ->where('room_id', '=', $this->id)
+                ->first();
+
+        if (!$guest)
+        {
+            return false;
+        }
+
+        if (!$this->addInPlaylist($uri))
+        {
+            return false;
+        }
+
+        $music = Music::where('uri', '=', $uri)
+                ->where('room_id', '=', $this->id)
+                ->first();
+
+        if (!$music)
+        {
+            $music = new Music;
+            $music->room_id = $this->id;
+            $music->guest_id = $guest_id;
+            $music->uri = $uri;
+        }
+        else
+        {
+            $music->guest_id = $guest_id;
+        }
+
+        $music->save();
     }
 }
