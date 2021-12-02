@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,15 +17,6 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -32,5 +24,6 @@ Route::get('/dashboard', function () {
 Route::resource("/user", UserController::class);
 
 Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
-
-require __DIR__.'/auth.php';
+Route::get('/logout', [UserController::class, 'logout'])->name('logout');
+Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLogin');
+Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');

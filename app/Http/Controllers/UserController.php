@@ -5,7 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\SpotifyService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rules;
+use Illuminate\Auth\Events\Registered;
 
 class UserController extends Controller
 {
@@ -16,8 +22,51 @@ class UserController extends Controller
      */
     public function index()
     {
-        $spotify = new SpotifyService();
-        return $spotify->redirect();
+        $result = null;
+        $username = Session::get("username");
+
+        if($username != null)
+        {
+            $username = $username[0];
+            // $currentUser = User::where('username', '=', $username)->first();
+            $result = compact('username');
+            // print_r($result['currentUser']['username']);
+            return inertia('Sparty/User/Index', $result);
+        }
+
+        return Inertia::render('Sparty/User/Login', [
+            'canResetPassword' => false,
+            'status' => Session::get('status'),
+        ]);
+
+    }
+
+    public function checkLogin(Request $request)
+    {
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $hash_password = null;
+
+        if (User::where('username', '=', $username)->exists())
+        {
+            $hash_password = User::where('username', '=', $username)->first()->password;
+        }
+
+        if ($hash_password != null && Hash::check($password, $hash_password))
+        {
+            Session::push('username', $username);
+        }
+        else
+        {
+            Session::flash('status', 'Wrong username or password !');
+        }
+        return Redirect::route('user.index');
+    }
+
+    public function logout()
+    {
+        Session::forget('username');
+        return Redirect::route('user.index');
     }
 
     public function getRefresh(Request $request)
@@ -51,7 +100,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Sparty/User/CreateAccount');
     }
 
     /**
@@ -62,7 +111,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $user = User::create([
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+        ]);
+
+        event(new Registered($user));
+
+        Session::forget('username');
+        Session::push('username', $request->username);
+
+        return Redirect::route('user.index');
     }
 
     /**

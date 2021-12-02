@@ -23,14 +23,13 @@ class SpotifyService
      * Construct the SpotifyService
      * @param string $refresh the refresh code of the user
      */
-    public function __construct($user_id = null, $refresh = null)
+    public function __construct($refresh = null)
     {
         $this->api_id = config('sparty.spotify_id');
         $this->api_secret = config('sparty.spotify_secret');
 
         $this->client = new Client();
 
-        $this->user_id = $user_id;
         $this->refresh = $refresh;
         $this->access = null;
 
@@ -49,7 +48,7 @@ class SpotifyService
     {
         $redirect = route('code');
         $scope = "user-modify-playback-state+user-read-currently-playing+user-read-playback-state+playlist-modify-private";
-        
+
         $url = url("https://accounts.spotify.com/authorize?client_id={$this->api_id}"
                 . "&response_type=code&redirect_uri={$redirect}"
                 . "&scope={$scope}");
@@ -76,7 +75,7 @@ class SpotifyService
             'Authorization' => 'Basic ' . base64_encode($this->api_id . ':' . $this->api_secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
-       
+
         try
         {
             $response = $this->client->request('POST', $endpoint,
@@ -118,7 +117,7 @@ class SpotifyService
             'Authorization' => 'Basic ' . base64_encode($this->api_id . ':' . $this->api_secret),
             'Content-Type' => 'application/x-www-form-urlencoded'
         ];
-       
+
         try
         {
             $response = $this->client->request('POST', $endpoint,
@@ -155,7 +154,7 @@ class SpotifyService
         $headers = [
             'Authorization' => 'Bearer ' . $this->access
         ];
-       
+
         try
         {
             $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
@@ -191,7 +190,7 @@ class SpotifyService
         $headers = [
             'Authorization' => 'Bearer ' . $this->access
         ];
-       
+
         try
         {
             $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
@@ -331,7 +330,7 @@ class SpotifyService
         $headers = [
             'Authorization' => 'Bearer ' . $this->access
         ];
-        
+
         try
         {
             $this->client->request('POST', $endpoint, ['headers' => $headers]);
@@ -360,7 +359,7 @@ class SpotifyService
         $headers = [
             'Authorization' => 'Bearer ' . $this->access
         ];
-        
+
         try
         {
             $response = $this->client->request('GET', $endpoint, ['headers' => $headers]);
@@ -402,7 +401,7 @@ class SpotifyService
             'name' => $name,
             'public' => 'false'
         ];
-        
+
         try
         {
             $response = $this->client->request('POST', $endpoint,
@@ -570,7 +569,7 @@ class SpotifyService
         $json = [
             'uris' => [$track_uri]
         ];
-        
+
         try
         {
             $this->client->request('POST', $endpoint,
@@ -647,7 +646,7 @@ class SpotifyService
         $query = [
             'state' => var_export($shuffle, true)
         ];
-        
+
         try
         {
             $this->client->request('PUT', $endpoint,
@@ -685,7 +684,7 @@ class SpotifyService
                 'uri' => $track_uri
             ]]
         ];
-        
+
         try
         {
             $this->client->request('DELETE', $endpoint,
