@@ -26,6 +26,7 @@ class UserController extends Controller
 
         $spotify = new SpotifyService();
         $refresh = $spotify->getRefresh($code);
+        var_dump($refresh);
 
         if (!$refresh)
         {

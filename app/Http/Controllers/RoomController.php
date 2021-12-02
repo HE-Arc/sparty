@@ -25,13 +25,11 @@ class RoomController extends Controller
     public function search(Request $request)
     {
 
-        $trackname = $request->validate([
-            'search' => 'required'
-        ]);
-
-        $spotify = new SpotifyService();
-        $spotify->searchTrack($trackname);
-        return Inertia::render('Sparty/Room/Test', $trackname);
+        $trackname = $request->input('search');
+        $spotify = new SpotifyService('AQABx70EHUSdRmSalwLIWKoFQene74RV9OfeX6Ixczd9bvLc8uzhiqxSQChESYEn53JwYzlzFMD85-hZFo_AM8aRup4e8n6pLkySExiFTutsKzbpPfb-D-ZWAvtVrPJVWpc');
+        $searchResult = $spotify->searchTrack($trackname);
+        $result = compact('searchResult');
+        return Inertia::render('Sparty/Room/Search',$result);
     }
 
 
