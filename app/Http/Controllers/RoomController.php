@@ -16,7 +16,8 @@ class RoomController extends Controller
     {
         $room = Room::first();
         $guest = $room->createGuest();
-        $room->addMusic("spotify:track:5wKDPtbdggE1roeVp3UdXX", $guest->id);
+        var_dump($room->addMusic("spotify:track:5wKDPtbdggE1roeVp3UdXX", $guest->id));
+        var_dump($room->banGuest($guest->id));
     }
 
     /**

@@ -127,5 +127,42 @@ class Room extends Model
         }
 
         $music->save();
+        return true;
+    }
+
+    public function removeMusic($uri)
+    {
+        $music = Music::where('uri', '=', $uri)
+                ->where('room_id', '=', $this->id)
+                ->first();
+
+        if ($music)
+        {
+            $music->delete();
+        }
+
+        return $this->spotify->removeFromPlaylist($this->playlist_id, $uri);
+    }
+
+    public function banGuest($guest_id)
+    {
+        $guest = Guest::where('id', '=', $guest_id)
+                ->where('room_id', '=', $this->id)
+                ->first();
+
+        if (!$guest)
+        {
+            return false;
+        }
+
+        $musics = Music::where('guest_id', '=', $guest_id)->get();
+
+        foreach ($musics as $music)
+        {
+            $this->removeMusic($music->uri);
+        }
+
+        $guest->delete();
+        return true;
     }
 }
