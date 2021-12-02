@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guest;
 use App\Models\User;
 use App\Services\SpotifyService;
 use Illuminate\Http\Request;
@@ -72,25 +73,18 @@ class UserController extends Controller
     public function getRefresh(Request $request)
     {
         $code = $request->input('code');
-
+        
         $spotify = new SpotifyService();
         $refresh = $spotify->getRefresh($code);
-
+    
         if (!$refresh)
         {
             return;
         }
 
         $playlist_id = $spotify->createPlaylist('Sparty test');
-        $time_time = $spotify->searchTrack('Time time');
-
-        foreach ($time_time as $track)
-        {
-            $spotify->addToPlaylist($playlist_id, $track['uri']);
-        }
-
-        $spotify->setShuffle();
-        $spotify->playPlaylist($playlist_id);
+        var_dump($playlist_id);
+        var_dump($refresh);
     }
 
     /**

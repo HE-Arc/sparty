@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
@@ -22,6 +23,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource("/user", UserController::class);
+Route::resource("/room", RoomController::class);
 
 Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');

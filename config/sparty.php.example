@@ -3,4 +3,5 @@
 return [
     'spotify_id' => 'blablabla', // The client_id from Spotify API 
     'spotify_secret' => 'bloubloublou', // The client_secret from Spotify API 
+    'wordlist_location' => 'wordlist.txt' // The location of the wordlist for the user generation
 ];

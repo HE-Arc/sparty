@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Room;
 use Illuminate\Http\Request;
 
 class RoomController extends Controller
@@ -13,7 +14,10 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
+        $room = Room::first();
+        $guest = $room->createGuest();
+        var_dump($room->addMusic("spotify:track:5wKDPtbdggE1roeVp3UdXX", $guest->id));
+        var_dump($room->banGuest($guest->id));
     }
 
     /**
