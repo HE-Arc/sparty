@@ -88,7 +88,8 @@ class RoomController extends Controller
             'name' => $request->roomname,
             'user_id' => $id,
             'password' => Hash::make($request->password),
-            'playlist_id' => $playlist_id
+            'playlist_id' => $playlist_id,
+            'max_vote' => 10
         ]);
 
         event(new Registered($room));

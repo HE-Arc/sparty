@@ -21,7 +21,8 @@ class Room extends Model
         'name',
         'user_id',
         'password',
-        'playlist_id'
+        'playlist_id',
+        'max_vote'
     ];
 
     protected static function boot()
