@@ -1,6 +1,6 @@
 <template>
   <Head title="Room" />
-<div class="card">
+  <div class="card">
     <div class="card-header" id="hide">
         <div>
             <breeze-application-logo width="80" />
@@ -8,9 +8,33 @@
     </div>
    <div class="container">
         <div class="row">
-            <div class="col-md-12"><h1 class="text-center">RoomName</h1></div>
-            <div class="col-md-12">
-                <h1 class="text-center"></h1>
+            <h1 class="text-center">TESTTTTTTT</h1>
+            <h1>{{trackname}}</h1>
+            <div class="col-md-12"><h1 class="text-center">RoomName</h1>
+              <!--<table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Artist</th>
+                        <th scope="col">URI</th>
+                        <th scope="col">IMAGE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="data in searchResult" :key="data.name">
+                        <td>{{data.name ?? "marche pas"}}</td>
+                        <td>{{data.name ?? "marche pas"}}</td>
+                        <td>{{data.name ?? "marche pas"}}</td>
+                        <td>{{data.name ?? "marche pas"}}</td>
+                    <tr v-for="data in searchResult.data" :key="data.id">
+                        <td>{{data.name ?? "Auteur manquant..."}}</td>
+                        <td>{{data.artist ?? "Auteur manquant..."}}</td>
+                        <td>{{data.uri ?? "Auteur manquant..."}}</td>
+                        <td>{{data.image ?? "Auteur manquant..."}}</td>
+                    </tr>-->
+                    <!-- </tr>
+                </tbody>
+            </table>-->
             </div>
             <div class="col-md-12">
                 <div class="col-md-12">
@@ -50,15 +74,12 @@ export default {
     methods: {
       submit() {
       this.form
-          .post(this.route('search'), {
-              onSuccess: () => this.form.reset('search'),
-          })
+          .post(this.route('test'))
       }
   },
-   props: [
-      'searchResult'
-  ],
-
+   props: {
+      trackname: String,
+   },
    data() {
     return {
       form: this.$inertia.form({

@@ -24,8 +24,11 @@ Route::get('/dashboard', function () {
 
 Route::resource("/user", UserController::class);
 Route::resource('/room', RoomController::class);
-Route::post('/search', [RoomController::class, 'search'])->name('search');
+Route::get('/search', [RoomController::class, 'search'])->name('search');
+Route::get('/createRoom', [RoomController::class, 'create'])->name('createRoom');
 Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
 Route::get('/connection', [UserController::class, 'connection'])->name('connection');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLogin');
+Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');
+Route::post('/test', [RoomController::class, 'test'])->name('test');
