@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\SpotifyService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 
 class Room extends Model
 {
@@ -33,13 +34,21 @@ class Room extends Model
 
         if ($offset === null)
         {
-            return $this->spotify->addToPlaylist($this->playlist_id, $uri);
+            if ($this->spotify->addToPlaylist($this->playlist_id, $uri))
+            {
+                Session::flash('success', 'Track was added');
+            }
+            else
+            {
+                Session::flash('status', 'Track could not be added, try again later');
+            }
         }
 
         $uri_playing = $this->spotify->currentlyPlaying()['uri'];
 
         if (!$uri_playing)
         {
+            Session::flash('status', 'Spotify is not playing');
             return false;
         }
 
@@ -47,11 +56,20 @@ class Room extends Model
 
         if ($offset >= $playing_offset)
         {
+            Session::flash('status', 'Track already added');
             return false;
         }
 
         $this->spotify->removeFromPlaylist($this->playlist_id, $uri);
-        return $this->spotify->addToPlaylist($this->playlist_id, $uri);
+
+        if ($this->spotify->addToPlaylist($this->playlist_id, $uri))
+        {
+            Session::flash('success', 'Track was added');
+        }
+        else
+        {
+            Session::flash('status', 'Track could not be added, try again later');
+        }
     }
 
     public function getNextTracks($max = 10)
@@ -60,7 +78,7 @@ class Room extends Model
         
         if (!$uri_playing)
         {
-            return null;
+            Session::flash('status', 'Could not search, try again later');
         }
 
         $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri_playing);
@@ -81,6 +99,11 @@ class Room extends Model
         if ($this->vote_nb == 0)
         {
             $this->spotify->skipTrack();
+            Session::flash('success', 'Track skipped');
+        }
+        else
+        {
+            Session::flash('success', $this->vote_nb + " vote(s) remaining");
         }
     }
 
@@ -102,6 +125,7 @@ class Room extends Model
 
         if (!$guest)
         {
+            Session::flash('status', 'You are not allowed to add music in this room');
             return false;
         }
 
