@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Room;
 use App\Services\SpotifyService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Session;
+use App\Models\User;
 
 
 class RoomController extends Controller
@@ -26,12 +32,17 @@ class RoomController extends Controller
     {
 
         $trackname = $request->input('search');
-        $spotify = new SpotifyService('AQABx70EHUSdRmSalwLIWKoFQene74RV9OfeX6Ixczd9bvLc8uzhiqxSQChESYEn53JwYzlzFMD85-hZFo_AM8aRup4e8n6pLkySExiFTutsKzbpPfb-D-ZWAvtVrPJVWpc');
-        $searchResult = $spotify->searchTrack($trackname);
-        $result = compact('searchResult');
-        return Inertia::render('Sparty/Room/Search',$result);
+        // $spotify = new SpotifyService('AQABx70EHUSdRmSalwLIWKoFQene74RV9OfeX6Ixczd9bvLc8uzhiqxSQChESYEn53JwYzlzFMD85-hZFo_AM8aRup4e8n6pLkySExiFTutsKzbpPfb-D-ZWAvtVrPJVWpc');
+
+        return Inertia::render('Sparty/Room/Search', [
+            'trackname' => $trackname,
+            ]);
     }
 
+    public function test()
+    {
+        return Redirect::route('search', ['trackname' => "hello",]);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -40,7 +51,9 @@ class RoomController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Sparty/Room/CreateRoom', [
+            'status' => Session::get('status'),
+        ]);
     }
 
     /**
@@ -51,7 +64,38 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $request->validate([
+            'roomname' => 'required|string|max:255',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        if(Room::where('name', '=', $request->roomname)->exists())
+        {
+            Session::flash('status', "Roomname already existe!");
+            return Redirect::route('room.create');
+        }
+
+        //@TODO
+        $username = Session::get('username');
+        $username = 'admin';
+        $id = User::where('username', '=', $username)->first()->id;
+
+        $room = Room::create([
+            'name' => $request->roomname,
+            'user_id' => $id,
+            'password' => Hash::make($request->password),
+        ]);
+
+        event(new Registered($room));
+
+        Session::forget('roomname');
+        Session::push('roomname', $request->roomname);
+        Session::flash('success', "Room is created !");
+
+
+
+        return Redirect::route('room.index');
     }
 
     /**

@@ -12,6 +12,17 @@ class Room extends Model
 
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $fillable = [
+        'name',
+        'user_id',
+        'password'
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -21,7 +32,7 @@ class Room extends Model
             $model->spotify = new SpotifyService($model->user->refresh);
         });
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -57,7 +68,7 @@ class Room extends Model
     public function getNextTracks($max = 10)
     {
         $uri_playing = $this->spotify->currentlyPlaying()['uri'];
-        
+
         if (!$uri_playing)
         {
             return null;
