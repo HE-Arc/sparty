@@ -26,6 +26,6 @@ Route::resource("/user", UserController::class);
 Route::resource('/room', RoomController::class);
 Route::post('/search', [RoomController::class, 'search'])->name('search');
 Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
+Route::get('/connection', [UserController::class, 'connection'])->name('connection');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLogin');
-Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');

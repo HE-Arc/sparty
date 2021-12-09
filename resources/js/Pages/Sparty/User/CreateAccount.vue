@@ -6,6 +6,10 @@
 
     <breeze-validation-errors class="mb-3" />
 
+    <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
+      {{ status }}
+    </div>
+
     <form @submit.prevent="submit">
       <div class="mb-3">
         <breeze-label for="username" value="Username" />
@@ -63,6 +67,10 @@ export default {
     BreezeValidationErrors,
     Link,
     NavBar,
+  },
+
+  props: {
+    status: String
   },
 
   data() {

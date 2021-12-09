@@ -5,7 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\SpotifyService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rules;
+use Illuminate\Auth\Events\Registered;
 
 class UserController extends Controller
 {
@@ -16,30 +22,93 @@ class UserController extends Controller
      */
     public function index()
     {
+        $result = null;
+        $username = Session::get("username");
+        $spotifyUsername = "Not connected yet!";
+
+        if($username != null)
+        {
+            $refresh = User::where('username', '=', $username)->first()->refresh;
+
+            if($refresh != null)
+            {
+                $spotify = new SpotifyService($refresh);
+                $spotifyUsername = $spotify->getUserName();
+            }
+
+            if(!$spotifyUsername)
+            {
+                $spotifyUsername = "Not connected yet!";
+            }
+
+            $username = $username[0];
+            return inertia('Sparty/User/Index', [
+                'username' => $username,
+                'spotifyUsername' => $spotifyUsername,
+            ]);
+        }
+
+        return Inertia::render('Sparty/User/Login', [
+            'status' => Session::get('status'),
+        ]);
+
+    }
+
+    public function checkLogin(Request $request)
+    {
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $hash_password = null;
+
+        if (User::where('username', '=', $username)->exists())
+        {
+            $hash_password = User::where('username', '=', $username)->first()->password;
+        }
+
+        if ($hash_password != null && Hash::check($password, $hash_password))
+        {
+            Session::push('username', $username);
+        }
+        else
+        {
+            Session::flash('status', 'Wrong username or password !');
+        }
+        return Redirect::route('user.index');
+    }
+
+    public function logout()
+    {
+        Session::forget('username');
+        return Redirect::route('user.index');
+    }
+
+    public function connection()
+    {
         $spotify = new SpotifyService();
-        return $spotify->redirect();
+        return Inertia::location($spotify->redirect());
     }
 
     public function getRefresh(Request $request)
     {
-        $code = $request->input('code');
-
-        $spotify = new SpotifyService();
-        $refresh = $spotify->getRefresh($code);
-        var_dump($refresh);
-
-        if (!$refresh)
+        if (Session::has('username'))
         {
-            return;
+            $code = $request->input('code');
+
+            $spotify = new SpotifyService();
+            $refresh = $spotify->getRefresh($code);
+
+            if (!$refresh)
+            {
+                return;
+            }
+
+            //faire une verification de username dans session
+            $currentUser = User::where('username', '=', Session::get('username'))->first();
+            $currentUser->refresh = $refresh;
+            $currentUser->save();
         }
 
-        print_r($spotify->currentlyPlaying());
-
-        $search = $spotify->searchTrack('Never gonna give');
-        print_r($search);
-
-        $spotify->addToQueue($search[0]['uri']);
-        $spotify->skipTrack();
+        return Redirect::route('user.index');
     }
 
     /**
@@ -49,7 +118,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Sparty/User/CreateAccount', [
+            'status' => Session::get('status'),
+        ]);
     }
 
     /**
@@ -60,7 +131,28 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        if(User::where('username', '=', $request->username)->exists())
+        {
+            $request->session()->flash('status', "Username is already in use!");
+            return Redirect::route('user.create');
+        }
+
+        $user = User::create([
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+        ]);
+
+        event(new Registered($user));
+
+        Session::forget('username');
+        Session::push('username', $request->username);
+
+        return Redirect::route('user.index');
     }
 
     /**

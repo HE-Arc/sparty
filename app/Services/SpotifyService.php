@@ -53,7 +53,7 @@ class SpotifyService
                 . "&response_type=code&redirect_uri={$redirect}"
                 . "&scope={$scope}");
 
-        return redirect()->away($url);
+        return $url;
     }
 
     /**
