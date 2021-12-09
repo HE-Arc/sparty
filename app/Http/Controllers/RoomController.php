@@ -72,19 +72,23 @@ class RoomController extends Controller
 
         if(Room::where('name', '=', $request->roomname)->exists())
         {
-            Session::flash('status', "Roomname already existe!");
+            Session::flash('status', "Name already exist!");
             return Redirect::route('room.create');
         }
 
         //@TODO
         $username = Session::get('username');
-        $username = 'admin';
-        $id = User::where('username', '=', $username)->first()->id;
+        $user = User::where('username', '=', $username)->first(); // TODO test exist
+        $id = $user->id;
+
+        $spotify = new SpotifyService($user->refresh);
+        $playlist_id = $spotify->createPlaylist('Sparty ' . $request->roomname); // TODO test not null
 
         $room = Room::create([
             'name' => $request->roomname,
             'user_id' => $id,
             'password' => Hash::make($request->password),
+            'playlist_id' => $playlist_id
         ]);
 
         event(new Registered($room));

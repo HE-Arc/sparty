@@ -20,7 +20,8 @@ class Room extends Model
     protected $fillable = [
         'name',
         'user_id',
-        'password'
+        'password',
+        'playlist_id'
     ];
 
     protected static function boot()
