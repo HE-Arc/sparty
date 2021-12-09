@@ -24,7 +24,7 @@
 
       <div class="mb-0">
         <div class="d-flex justify-content-end align-items-baseline">
-          <Link :href='route("createAccount")' class="text-muted me-3 text-decoration-none">
+          <Link :href='route("user.create")' class="text-muted me-3 text-decoration-none">
             Create an account?
           </Link>
 

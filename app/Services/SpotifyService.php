@@ -50,7 +50,7 @@ class SpotifyService
                 . "&response_type=code&redirect_uri={$redirect}"
                 . "&scope=user-modify-playback-state+user-read-currently-playing+user-read-playback-state");
 
-        return redirect()->away($url);
+        return $url;
     }
 
     /**
