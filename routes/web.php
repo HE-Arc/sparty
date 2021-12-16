@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
@@ -22,7 +23,8 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::resource("/user", UserController::class);
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::resource('/user', UserController::class);
 Route::resource('/room', RoomController::class);
 Route::get('/search', [RoomController::class, 'search'])->name('search');
 Route::get('/createRoom', [RoomController::class, 'create'])->name('createRoom');
