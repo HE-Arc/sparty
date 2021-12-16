@@ -1,40 +1,15 @@
 <template>
   <Head title="Room" />
-  <div class="card">
-    <div class="card-header" id="hide">
-        <div>
-            <breeze-application-logo width="80" />
-        </div>
+  <div class="card-body">
+    <breeze-validation-errors class="mb-3" />
+
+    <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
+      {{ status }}
     </div>
-   <div class="container">
         <div class="row">
-            <h1 class="text-center">TESTTTTTTT</h1>
-            <h1>{{trackname}}</h1>
+            <h1 class="text-center">{{ roomname }}</h1>
+            <h1>{{ trackname }}</h1>
             <div class="col-md-12"><h1 class="text-center">RoomName</h1>
-              <!--<table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Artist</th>
-                        <th scope="col">URI</th>
-                        <th scope="col">IMAGE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="data in searchResult" :key="data.name">
-                        <td>{{data.name ?? "marche pas"}}</td>
-                        <td>{{data.name ?? "marche pas"}}</td>
-                        <td>{{data.name ?? "marche pas"}}</td>
-                        <td>{{data.name ?? "marche pas"}}</td>
-                    <tr v-for="data in searchResult.data" :key="data.id">
-                        <td>{{data.name ?? "Auteur manquant..."}}</td>
-                        <td>{{data.artist ?? "Auteur manquant..."}}</td>
-                        <td>{{data.uri ?? "Auteur manquant..."}}</td>
-                        <td>{{data.image ?? "Auteur manquant..."}}</td>
-                    </tr>-->
-                    <!-- </tr>
-                </tbody>
-            </table>-->
             </div>
             <div class="col-md-12">
                 <div class="col-md-12">
@@ -54,7 +29,6 @@
             </div>
         </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -74,11 +48,12 @@ export default {
     methods: {
       submit() {
       this.form
-          .post(this.route('test'))
+          .get(this.route('search'))
       }
   },
    props: {
       trackname: String,
+      roomname: String,
    },
    data() {
     return {

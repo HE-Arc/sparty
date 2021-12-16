@@ -31,4 +31,5 @@ Route::get('/connection', [UserController::class, 'connection'])->name('connecti
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLogin');
 Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');
-Route::post('/test', [RoomController::class, 'test'])->name('test');
+Route::post('/addMusic', [RoomController::class, 'addMusic'])->name('addMusic');
+

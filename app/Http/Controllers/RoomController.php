@@ -13,7 +13,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
-
+use GuzzleHttp\Psr7\Uri;
 
 class RoomController extends Controller
 {
@@ -25,23 +25,40 @@ class RoomController extends Controller
     public function index()
     {
         //$books = Book::with('author')->latest()->paginate(5);
-        return inertia('Sparty/Room/Index');
+
+        if (!Session::has('room_id'))
+        {
+            Session::flash('status', "");
+            return Redirect::route('room.create'); //@TODO room.home
+        }
+        else
+        {
+            $room_id = Session::get('room_id');
+            $room = Room::find($room_id);
+
+            return inertia('Sparty/Room/Index', [
+                'roomname' => $room->name,
+            ]);
+        }
+
     }
 
     public function search(Request $request)
     {
 
+        $room_id = Session::get('room_id');
+        $room = Room::find($room_id);
+
+        $refresh = $room->user->refresh;
+
         $trackname = $request->input('search');
-        // $spotify = new SpotifyService('AQABx70EHUSdRmSalwLIWKoFQene74RV9OfeX6Ixczd9bvLc8uzhiqxSQChESYEn53JwYzlzFMD85-hZFo_AM8aRup4e8n6pLkySExiFTutsKzbpPfb-D-ZWAvtVrPJVWpc');
+        $spotify = new SpotifyService($refresh);
 
-        return Inertia::render('Sparty/Room/Search', [
-            'trackname' => $trackname,
+        $tab = $spotify->searchTrack($trackname);
+
+        return Inertia::render('Sparty/Room/SearchResult', [
+            'trackArray' => $tab,
             ]);
-    }
-
-    public function test()
-    {
-        return Redirect::route('search', ['trackname' => "hello",]);
     }
 
     /**
@@ -79,10 +96,19 @@ class RoomController extends Controller
         //@TODO
         $username = Session::get('username');
         $user = User::where('username', '=', $username)->first(); // TODO test exist
+        if ($user == '')
+        {
+            Session::flash('status', "User not connected !");
+            return Redirect::route('user.index');
+        }
         $id = $user->id;
 
         $spotify = new SpotifyService($user->refresh);
         $playlist_id = $spotify->createPlaylist('Sparty ' . $request->roomname); // TODO test not null
+        if ($playlist_id == ''){
+            Session::flash('status', "User has not linked his Spotify account!");
+            return Redirect::route('user.index');
+        }
 
         $room = Room::create([
             'name' => $request->roomname,
@@ -94,13 +120,23 @@ class RoomController extends Controller
 
         event(new Registered($room));
 
-        Session::forget('roomname');
-        Session::push('roomname', $request->roomname);
-        Session::flash('success', "Room is created !");
+        Session::forget('room_id');
+        Session::put('room_id', $room->id);
+       // Session::flash('success', "Room is created !");
 
-
-
+       //@TODO regarder sur internet
         return Redirect::route('room.index');
+    }
+
+    public function addMusic(Request $request)
+    {
+        //@TODO verification
+        $uri = $request->uri;
+        $room_id = Session::get('room_id');
+        $room = Room::find($room_id);
+        $guest_ID = 1; //@TODO Sortir de la session
+        var_dump($room->addMusic($uri, $guest_ID));
+        //return Redirect::route('room.index');
     }
 
     /**
