@@ -4,7 +4,7 @@
     <div class="container">
          <div class="col-md-12"><h1 class="text-center">RoomName</h1>
                 <div v-for="track in trackArray" :key="track.name">
-                    <form @submit.prevent="submit">
+                    <form @submit.prevent="submit(track)">
                         <p>{{track.name ?? "marche pas"}}</p>
                         <p>{{track.artist ?? "marche pas"}}</p>
                         <breeze-input-binding type="text" v-model="track.uri"></breeze-input-binding>
@@ -47,8 +47,9 @@ export default {
   },
   methods: {
 
-      submit() {
-      this.form
+    submit(track) {
+    this.form.uri = track.uri;
+    this.form
           .post(this.route('addMusic'))
       }
   }
