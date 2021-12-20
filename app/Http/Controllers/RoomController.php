@@ -29,7 +29,6 @@ class RoomController extends Controller
 
         if (!Session::has('room_id'))
         {
-            Session::flash('status', "");
             return Redirect::route('room.create'); //@TODO room.home
         }
         else
@@ -38,7 +37,7 @@ class RoomController extends Controller
             $room = Room::find($room_id);
 
             return inertia('Sparty/Room/Index', [
-                'roomname' => $room->name,
+                'roomname' => $room->name
             ]);
         }
 
@@ -60,6 +59,7 @@ class RoomController extends Controller
 
         return Inertia::render('Sparty/Room/SearchResult', [
             'trackArray' => $tab,
+            'roomname' => $room->name
             ]);
     }
 
@@ -139,17 +139,54 @@ class RoomController extends Controller
      */
     public function addMusic(Request $request)
     {
+        $errorMsg = '';
 
-        //@TODO verification
+        $request->validate([
+            'uri' => 'required'
+        ]);
+
         $uri = $request->uri;
-        var_dump($uri);
-        var_dump($request->all);
+        if ($uri == '')
+        {
+            $errorMsg = 'Music link not found !';
+        }
+
+        if (!Session::has('room_id'))
+        {
+            $errorMsg = 'Room not found !';
+        }
+
+        if(!Room::where('id', '=', Session::get('room_id'))->exists())
+        {
+            $errorMsg = 'Room not found !';
+        }
+
+        //if (!Session::has('guest_id'))
+        //{
+        //    $errorMsg = 'Guest has not id !'
+        //}
+
+        if (!$errorMsg=='')
+        {
+            Session::flash('status', $errorMsg);
+            return Redirect::route('room.index');
+        }
+
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
+        // $guest_ID = Session::get('guest_id')
         $guest_ID = 4; //@TODO Sortir de la session
-        var_dump($guest_ID);
-        //$room->addMusic($uri, $guest_ID);
-        //return Redirect::route('room.index');
+
+        if($room->addMusic($uri, $guest_ID))
+        {
+            Session::flash('status', 'success'); //@TODO mettre dans success
+            return Redirect::route('room.index');
+        }
+        else
+        {
+            Session::flash('status', 'Problem occurred while adding the music to the playlist !');
+            return Redirect::route('room.index');
+        }
     }
 
     /**
