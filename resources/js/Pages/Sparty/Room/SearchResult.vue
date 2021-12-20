@@ -1,25 +1,19 @@
 <template>
   <Head title="test" />
   <div class="card-body">
-
-    <breeze-validation-errors class="mb-3" />
-
-    <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
-      {{ status }}
-    </div>
-
     <div class="container">
          <div class="col-md-12"><h1 class="text-center">RoomName</h1>
-                    <div v-for="track in trackArray" :key="track.name">
-                        <p>{{track.name ?? "marche pas"}}</p>
-                        <p>{{track.artist ?? "marche pas"}}</p>
-                        <form @submit.prevent="submit">
-                        <breeze-input id="uri" type="hidden" v-model="form.uri" value="{{track.uri}}" required/>
-                        <breeze-button type="submit">yo</breeze-button>
-                        </form>
-                        <p>{{track.image ?? "marche pas"}}</p>
-                    </div>
+            <div v-for="track in trackArray" :key="track.name">
+                <p>{{track.name ?? "marche pas"}}</p>
+                <p>{{track.artist ?? "marche pas"}}</p>
+                <form @submit.prevent="submit">
+                    <breeze-input id="uri" type="text" v-model="form.uri">{{ track.uri }}</breeze-input>
+                    <breeze-button type="submit">yo</breeze-button>
+                    <p>{{track.image ?? "marche pas"}}</p>
+                    <p>{{ track.uri }}</p>
+                </form>
             </div>
+        </div>
     </div>
   </div>
 </template>
@@ -40,20 +34,22 @@ export default {
     Link,
   },
   props: [
-      "trackArray",
+      "trackArray"
   ],
-  methods: {
-      submit() {
-      this.form
-          .post(this.route('addMusic'))
-      }
-  },
-  data() {
+   data() {
     return {
       form: this.$inertia.form({
         uri: '',
       })
     }
+  },
+  methods: {
+      submit() {
+      this.form
+          .post(this.route('addMusic'), {
+              onSuccess: () => this.form.reset('uri'),
+          })
+      }
   }
 }
 </script>

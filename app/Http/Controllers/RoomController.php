@@ -25,6 +25,7 @@ class RoomController extends Controller
     public function index()
     {
         //$books = Book::with('author')->latest()->paginate(5);
+        Session::put('room_id', 13);
 
         if (!Session::has('room_id'))
         {
@@ -46,6 +47,7 @@ class RoomController extends Controller
     public function search(Request $request)
     {
 
+        Session::put('room_id', 13);
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
 
@@ -130,12 +132,15 @@ class RoomController extends Controller
 
     public function addMusic(Request $request)
     {
+
         //@TODO verification
         $uri = $request->uri;
+        var_dump($uri);
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
-        $guest_ID = 1; //@TODO Sortir de la session
-        var_dump($room->addMusic($uri, $guest_ID));
+        $guest_ID = 4; //@TODO Sortir de la session
+        var_dump($guest_ID);
+        //$room->addMusic($uri, $guest_ID);
         //return Redirect::route('room.index');
     }
 
