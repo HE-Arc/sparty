@@ -130,12 +130,20 @@ class RoomController extends Controller
         return Redirect::route('room.index');
     }
 
+
+    /**
+     * Add music to the playlist
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function addMusic(Request $request)
     {
 
         //@TODO verification
         $uri = $request->uri;
         var_dump($uri);
+        var_dump($request->all);
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
         $guest_ID = 4; //@TODO Sortir de la session
