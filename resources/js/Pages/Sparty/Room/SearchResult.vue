@@ -39,7 +39,6 @@ export default {
         }
     },
     methods: {
-
     submit(track) {
         this.form.uri = track.uri;
         this.form

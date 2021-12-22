@@ -30,12 +30,11 @@
                     </div>
                     <div class="col-md-4">
                         <h2>button zone</h2>
-                            <form @submit.prevent="delsubmit()">
-                                <breeze-button type="submit">delsubmit</breeze-button>
-                            </form>
-
-                                <breeze-button type="skip">Vote Skip</breeze-button>
-                                <breeze-button type="copy">Copy url</breeze-button>
+                            <button @click="destroy(roomid)" class="btn btn-danger">Delete the room</button>
+                            <button @click="vote()" class="btn btn-success">Vote skip</button>
+                            <button @click="copy()" class="btn btn-info">Copy url</button>
+                            <breeze-button type="skip">Vote Skip</breeze-button>
+                            <breeze-button type="copy">Copy url</breeze-button>
                     </div>
                 </div>
             </div>
@@ -48,6 +47,8 @@ import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeButton from "@/Components/Button.vue";
 import BreezeInput from "@/Components/Input.vue";
 import BreezeLabel from '@/Components/Label.vue';
+import { Inertia } from '@inertiajs/inertia';
+import BreezeNavLink from '@/Components/NavLink.vue'
 
 export default {
   components: {
@@ -55,23 +56,24 @@ export default {
     Link,
     BreezeButton,
     BreezeInput,
-    BreezeLabel
+    BreezeLabel,
+    BreezeNavLink,
   },
     methods: {
-      submit() {
-        this.form
-            .get(this.route('search'))
-      },
-      delsubmit() {
-          this.form
-            .post(this.route('room.destroy'))
-      }
-  },
+        destroy(id) {
+            Inertia.delete(route('room.destroy', id));
+        },
+        submit(){
+            this.form
+                .get(this.route('search'))
+        },
+    },
     props : [
         'status',
         'trackname',
         'roomname',
         'currentPlaying',
+        'roomid'
     ],
    data() {
     return {

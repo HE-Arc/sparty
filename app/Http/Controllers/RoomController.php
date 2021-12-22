@@ -50,7 +50,8 @@ class RoomController extends Controller
             return inertia('Sparty/Room/Index', [
                 'status' => Session::get('status'),
                 'roomname' => $room->name,
-                'currentPlaying' => $currentlyPlaying
+                'currentPlaying' => $currentlyPlaying,
+                'roomid' => $room_id
             ]);
         }
 
@@ -68,7 +69,7 @@ class RoomController extends Controller
         $trackname = $request->input('search');
         $spotify = new SpotifyService($refresh);
 
-        $tab = $spotify->searchTrack($trackname);
+        $tab = $spotify->searchTrack($trackname, 0, 36);
 
         return Inertia::render('Sparty/Room/SearchResult', [
             'trackArray' => $tab,
@@ -202,6 +203,11 @@ class RoomController extends Controller
         }
     }
 
+    public function delete()
+    {
+        var_dump("okay okay");
+    }
+
     /**
      * Display the specified resource.
      *
@@ -244,6 +250,6 @@ class RoomController extends Controller
      */
     public function destroy($id)
     {
-        var_dump("okay okay");
+        var_dump($id);
     }
 }
