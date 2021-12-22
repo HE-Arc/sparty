@@ -30,8 +30,8 @@
                     </div>
                     <div class="col-md-4">
                         <h2>button zone</h2>
-                            <form @delsubmit.prevent="delsubmit">
-                                <breeze-button type="delsubmit">delsubmit</breeze-button>
+                            <form @submit.prevent="delsubmit()">
+                                <breeze-button type="submit">delsubmit</breeze-button>
                             </form>
 
                                 <breeze-button type="skip">Vote Skip</breeze-button>
