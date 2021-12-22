@@ -29,15 +29,28 @@ class RoomController extends Controller
 
         if (!Session::has('room_id'))
         {
-            return Redirect::route('room.create'); //@TODO room.home
+           // return Redirect::route('room.create'); //@TODO room.home
+            return inertia('Sparty/Room/Create', [
+                'status' => Session::get('status'),
+            ]);
         }
         else
         {
             $room_id = Session::get('room_id');
             $room = Room::find($room_id);
+            $refresh = $room->user->refresh;
+            $spotify = new SpotifyService($refresh);
+            $currentlyPlaying = $spotify->currentlyPlaying();
+
+            if ($currentlyPlaying == '')
+            {
+                Session::flash('status', "the room does not play any music !");
+            }
 
             return inertia('Sparty/Room/Index', [
-                'roomname' => $room->name
+                'status' => Session::get('status'),
+                'roomname' => $room->name,
+                'currentPlaying' => $currentlyPlaying
             ]);
         }
 
@@ -231,6 +244,6 @@ class RoomController extends Controller
      */
     public function destroy($id)
     {
-        //
+        var_dump("okay okay");
     }
 }

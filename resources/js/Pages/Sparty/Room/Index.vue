@@ -23,8 +23,20 @@
                     </form>
                 </div>
                 <div class="row">
-                    <div class="col-md-8"><h2>currently</h2></div>
-                    <div class="col-md-4"><h2>button zone</h2></div>
+                    <div class="col-md-8">
+                        <h2>currently: {{ currentPlaying['name'] }}</h2>
+                        <h3>{{ currentPlaying['artist'] }}</h3>
+                        <img :src="currentPlaying['image']" :alt="currentPlaying['name']"/>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>button zone</h2>
+                            <form @delsubmit.prevent="delsubmit">
+                                <breeze-button type="delsubmit">delsubmit</breeze-button>
+                            </form>
+
+                                <breeze-button type="skip">Vote Skip</breeze-button>
+                                <breeze-button type="copy">Copy url</breeze-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,14 +59,20 @@ export default {
   },
     methods: {
       submit() {
-      this.form
-          .get(this.route('search'))
+        this.form
+            .get(this.route('search'))
+      },
+      delsubmit() {
+          this.form
+            .post(this.route('room.destroy'))
       }
   },
-   props: {
-      trackname: String,
-      roomname: String,
-   },
+    props : [
+        'status',
+        'trackname',
+        'roomname',
+        'currentPlaying',
+    ],
    data() {
     return {
       form: this.$inertia.form({
