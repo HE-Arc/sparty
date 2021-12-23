@@ -202,9 +202,15 @@ class RoomController extends Controller
 
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
-        // $guest_ID = Session::get('guest_id')
 
-        $guest_ID = 4; //@TODO Sortir de la session
+        if (!Session::has('guest_id'))
+        {
+            $guest_ID = 4; //@TOD
+        }
+        else
+        {
+            $guest_ID = Session::get('guest_id');
+        }
 
         if($room->addMusic($uri, $guest_ID))
         {
