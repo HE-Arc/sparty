@@ -1,40 +1,15 @@
 <template>
   <Head title="Room" />
-  <div class="card">
-    <div class="card-header" id="hide">
-        <div>
-            <breeze-application-logo width="80" />
-        </div>
+  <div class="card-body">
+   <breeze-validation-errors class="mb-3" />
+
+    <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
+      {{ status }}
     </div>
-   <div class="container">
         <div class="row">
-            <h1 class="text-center">TESTTTTTTT</h1>
-            <h1>{{trackname}}</h1>
+            <h1 class="text-center">{{ roomname }}</h1>
+            <h1>{{ trackname }}</h1>
             <div class="col-md-12"><h1 class="text-center">RoomName</h1>
-              <!--<table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Artist</th>
-                        <th scope="col">URI</th>
-                        <th scope="col">IMAGE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="data in searchResult" :key="data.name">
-                        <td>{{data.name ?? "marche pas"}}</td>
-                        <td>{{data.name ?? "marche pas"}}</td>
-                        <td>{{data.name ?? "marche pas"}}</td>
-                        <td>{{data.name ?? "marche pas"}}</td>
-                    <tr v-for="data in searchResult.data" :key="data.id">
-                        <td>{{data.name ?? "Auteur manquant..."}}</td>
-                        <td>{{data.artist ?? "Auteur manquant..."}}</td>
-                        <td>{{data.uri ?? "Auteur manquant..."}}</td>
-                        <td>{{data.image ?? "Auteur manquant..."}}</td>
-                    </tr>-->
-                    <!-- </tr>
-                </tbody>
-            </table>-->
             </div>
             <div class="col-md-12">
                 <div class="col-md-12">
@@ -48,20 +23,36 @@
                     </form>
                 </div>
                 <div class="row">
-                    <div class="col-md-8"><h2>currently</h2></div>
-                    <div class="col-md-4"><h2>button zone</h2></div>
+                    <current-playing :currentPlaying="currentPlaying" ></current-playing>
+                    <div class="col-md-4">
+                        <h2>button zone</h2>
+                            <button @click="destroy(roomid)" class="btn btn-danger">Delete the room</button>
+                            <button @click="voteSkip()" class="btn btn-success">Vote skip</button>
+                            <button @click="copy()" class="btn btn-info">Copy url</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-  </div>
 </template>
+
 
 <script>
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeButton from "@/Components/Button.vue";
 import BreezeInput from "@/Components/Input.vue";
 import BreezeLabel from '@/Components/Label.vue';
+import { Inertia } from '@inertiajs/inertia';
+import BreezeNavLink from '@/Components/NavLink.vue'
+import CurrentPlaying from '@/components/sparty/CurrentlyPlaying.vue'
+
+
+function currently() {
+    Inertia.reload()
+}
+
+//window.setInterval(currently, 20000)
+
 
 export default {
   components: {
@@ -69,17 +60,33 @@ export default {
     Link,
     BreezeButton,
     BreezeInput,
-    BreezeLabel
+    BreezeLabel,
+    BreezeNavLink,
+    CurrentPlaying,
   },
     methods: {
-      submit() {
-      this.form
-          .post(this.route('test'))
-      }
-  },
-   props: {
-      trackname: String,
-   },
+        destroy(id) {
+            Inertia.delete(route('room.destroy', id));
+        },
+        voteSkip(){
+            Inertia.visit(route('vote'));
+        },
+        submit(){
+            this.form
+                .get(this.route('search'))
+        },
+        copy()
+        {
+            //
+        }
+    },
+    props : [
+        'status',
+        'trackname',
+        'roomname',
+        'currentPlaying',
+        'roomid'
+    ],
    data() {
     return {
       form: this.$inertia.form({

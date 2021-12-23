@@ -22,7 +22,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        $result = null;
         $username = Session::get("username");
         $spotifyUsername = "Not connected yet!";
 

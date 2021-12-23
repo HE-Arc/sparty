@@ -13,6 +13,8 @@ use Illuminate\Validation\Rules;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
+use GuzzleHttp\Psr7\Uri;
+use App\Jobs\Heartbeat;
 
 
 class RoomController extends Controller
@@ -24,24 +26,63 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //$books = Book::with('author')->latest()->paginate(5);
-        return inertia('Sparty/Room/Index');
+
+        if (!Session::has('room_id'))
+        {
+           // return Redirect::route('room.create'); //@TODO room.home
+            return inertia('Sparty/Room/Create', [
+                'status' => Session::get('status'),
+            ]);
+        }
+        else
+        {
+            $room_id = Session::get('room_id');
+            $room = Room::find($room_id);
+
+            if(!$room)
+            {
+                Session::flash('status', "Room was deleted !");
+                return inertia('Sparty/Room/Create', [
+                    'status' => Session::get('status'),
+                ]);
+            }
+
+            $refresh = $room->user->refresh;
+            $spotify = new SpotifyService($refresh);
+            $currentlyPlaying = $spotify->currentlyPlaying();
+
+            if ($currentlyPlaying == null)
+            {
+                Session::flash('status', "the room does not play any music !");
+            }
+
+            return inertia('Sparty/Room/Index', [
+                'status' => Session::get('status'),
+                'roomname' => $room->name,
+                'currentPlaying' => $currentlyPlaying,
+                'roomid' => $room_id
+            ]);
+        }
+
     }
 
     public function search(Request $request)
     {
 
+        $room_id = Session::get('room_id');
+        $room = Room::find($room_id);
+
+        $refresh = $room->user->refresh;
+
         $trackname = $request->input('search');
-        // $spotify = new SpotifyService('AQABx70EHUSdRmSalwLIWKoFQene74RV9OfeX6Ixczd9bvLc8uzhiqxSQChESYEn53JwYzlzFMD85-hZFo_AM8aRup4e8n6pLkySExiFTutsKzbpPfb-D-ZWAvtVrPJVWpc');
+        $spotify = new SpotifyService($refresh);
 
-        return Inertia::render('Sparty/Room/Search', [
-            'trackname' => $trackname,
+        $tab = $spotify->searchTrack($trackname, 0, 36);
+
+        return Inertia::render('Sparty/Room/SearchResult', [
+            'trackArray' => $tab,
+            'roomname' => $room->name
             ]);
-    }
-
-    public function test()
-    {
-        return Redirect::route('search', ['trackname' => "hello",]);
     }
 
     /**
@@ -64,10 +105,10 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'roomname' => 'required|string|max:255',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'vote'     => 'required|numeric|min:2|max:100'
         ]);
 
         if(Room::where('name', '=', $request->roomname)->exists())
@@ -76,30 +117,116 @@ class RoomController extends Controller
             return Redirect::route('room.create');
         }
 
-        //@TODO
         $username = Session::get('username');
         $user = User::where('username', '=', $username)->first(); // TODO test exist
-        $id = $user->id;
+        if ($user == null)
+        {
+            Session::flash('status', "User not connected !");
+            return Redirect::route('user.index');
+        }
+
+        $room = Room::where('user_id', '=', $user->id)->first();
+
+        if ($room)
+        {
+            Session::flash('status', "User has already a room !");
+            Session::put('room_id', $room->id);
+            return Redirect::route('room.index');
+        }
 
         $spotify = new SpotifyService($user->refresh);
         $playlist_id = $spotify->createPlaylist('Sparty ' . $request->roomname); // TODO test not null
+        if ($playlist_id == null) {
+            Session::flash('status', "User has not linked his Spotify account!");
+            return Redirect::route('user.index');
+        }
 
         $room = Room::create([
             'name' => $request->roomname,
-            'user_id' => $id,
+            'user_id' => $user->id,
             'password' => Hash::make($request->password),
             'playlist_id' => $playlist_id,
-            'max_vote' => 10
+            'max_vote' => $request->vote
         ]);
 
         event(new Registered($room));
 
-        Session::forget('roomname');
-        Session::push('roomname', $request->roomname);
-        Session::flash('success', "Room is created !");
+        Session::forget('room_id');
+        Session::put('room_id', $room->id);
+        Session::flash('status', "Room is created !");
 
+        //@TODO regarder sur internet
+        return Redirect::route('room.index');
+    }
 
+    /**
+     * Add music to the playlist
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function addMusic(Request $request)
+    {
+        $errorMsg = '';
 
+        $request->validate([
+            'uri' => 'required'
+        ]);
+
+        $uri = $request->uri;
+        if ($uri == '')
+        {
+            $errorMsg = 'Music link not found !';
+        }
+
+        if (!Session::has('room_id'))
+        {
+            $errorMsg = 'Room not found !';
+        }
+
+        if(!Room::where('id', '=', Session::get('room_id'))->exists())
+        {
+            $errorMsg = 'Room not found !';
+        }
+
+        //if (!Session::has('guest_id'))
+        //{
+        //    $errorMsg = 'Guest has not id !'
+        //}
+
+        if (!$errorMsg=='')
+        {
+            Session::flash('status', $errorMsg);
+            return Redirect::route('room.index');
+        }
+
+        $room_id = Session::get('room_id');
+        $room = Room::find($room_id);
+        // $guest_ID = Session::get('guest_id')
+
+        $guest_ID = 4; //@TODO Sortir de la session
+
+        if($room->addMusic($uri, $guest_ID))
+        {
+            Session::flash('status', 'success added');
+            return Redirect::route('room.index');
+        }
+        else
+        {
+            Session::flash('status', 'Problem occurred while adding the music to the playlist !');
+            return Redirect::route('room.index');
+        }
+    }
+
+    public function vote(){
+
+        $room_id = Session::get('room_id');
+        $room = Room::find($room_id);
+
+        //music joué dans la session uri, si vote skip meme musique  @TODO
+        $room->voteSkip();
+
+        Session::flash('status', 'vote number added' . $room->vote_nb); //@TODO mettre dans success
         return Redirect::route('room.index');
     }
 
@@ -145,6 +272,20 @@ class RoomController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $room_id = Session::get('room_id');
+        $room = Room::find($room_id);
+
+        if(Room::where('id', '=', Session::get('room_id'))->exists())
+        {
+            Session::flash('status', 'room is deleted');
+            $room->delete();
+            return Redirect::route('room.create');
+        }
+        else
+        {
+            Session::flash('status', 'problem with the delete room !');
+            return Redirect::route('room.index');
+        }
+
     }
 }

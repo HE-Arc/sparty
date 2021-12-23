@@ -30,5 +30,8 @@ Route::get('/code', [UserController::class, 'getRefresh'])->name('code');
 Route::get('/connection', [UserController::class, 'connection'])->name('connection');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLogin');
+Route::post('/delete', [RoomController::class, 'delete'])->name('delete');
 Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');
-Route::post('/test', [RoomController::class, 'test'])->name('test');
+Route::post('/addMusic', [RoomController::class, 'addMusic'])->name('addMusic');
+Route::get('/vote', [RoomController::class, 'vote'])->name('vote');
+

@@ -117,7 +117,7 @@ class Room extends Model
         {
             return false;
         }
-
+        //guest no associé a la room
         if (!$this->addInPlaylist($uri))
         {
             return false;
