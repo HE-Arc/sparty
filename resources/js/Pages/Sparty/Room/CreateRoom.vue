@@ -18,6 +18,8 @@
             <breeze-input id="password" type="password" v-model="form.password" required autocomplete="password" />
             <breeze-label for="password_confirmation" value="Confirm Password" />
             <breeze-input id="password_confirmation" type="password" v-model="form.password_confirmation" required autocomplete="new-password" />
+            <breeze-label for="vote_max" value="vote_max" />
+            <breeze-input id="vote_max" type="number" v-model="form.vote" required autocomplete=1 />
             <breeze-button type="submit">Create room</breeze-button>
         </div>
       </div>
@@ -49,6 +51,7 @@ export default {
         roomname: '',
         password: '',
         password_confirmation: '',
+        vote: 1
       })
     }
   },
