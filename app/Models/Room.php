@@ -69,14 +69,14 @@ class Room extends Model
 
     public function getNextTracks($max = 10)
     {
-        $uri_playing = $this->spotify->currentlyPlaying()['uri'];
+        $track_playing = $this->spotify->currentlyPlaying();
 
-        if (!$uri_playing)
+        if (!$track_playing)
         {
             return null;
         }
 
-        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri_playing);
+        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $track_playing['uri']);
         return $this->spotify->getNextTracks($this->playlist_id, $playing_offset, $max);
     }
 
