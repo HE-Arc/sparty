@@ -29,10 +29,8 @@ class RoomController extends Controller
 
         if (!Session::has('room_id'))
         {
-           // return Redirect::route('room.create'); //@TODO room.home
-            return inertia('Sparty/Room/Create', [
-                'status' => Session::get('status'),
-            ]);
+            Session::flash('status', "User doesn't have any room id in the session !");
+            return Redirect::route('room.create');
         }
         else
         {
@@ -42,9 +40,7 @@ class RoomController extends Controller
             if(!$room)
             {
                 Session::flash('status', "Room was deleted !");
-                return inertia('Sparty/Room/Create', [
-                    'status' => Session::get('status'),
-                ]);
+                return Redirect::route('room.create');
             }
 
             $refresh = $room->user->refresh;
@@ -54,9 +50,10 @@ class RoomController extends Controller
             if ($currentlyPlaying == null)
             {
                 Session::flash('status', "the room does not play any music !");
+                $currentlyPlaying = '';
             }
 
-            return inertia('Sparty/Room/Index', [
+            return Inertia::render('Sparty/Room/Index', [
                 'status' => Session::get('status'),
                 'roomname' => $room->name,
                 'currentPlaying' => $currentlyPlaying,
@@ -149,6 +146,7 @@ class RoomController extends Controller
             'max_vote' => $request->vote
         ]);
 
+        $room->spotify->playPlaylist($playlist_id);
         event(new Registered($room));
 
         Session::forget('room_id');
@@ -205,7 +203,7 @@ class RoomController extends Controller
 
         if (!Session::has('guest_id'))
         {
-            $guest_ID = 4; //@TOD
+            $guest_ID = 5; //@TODO
         }
         else
         {
@@ -220,7 +218,7 @@ class RoomController extends Controller
         else
         {
             Session::flash('status', 'Problem occurred while adding the music to the playlist !');
-            return Redirect::route('room.index');
+            //return Redirect::route('room.index');
         }
     }
 
@@ -278,13 +276,14 @@ class RoomController extends Controller
      */
     public function destroy($id)
     {
-        $room_id = Session::get('room_id');
+        $room_id = $id;
         $room = Room::find($room_id);
 
         if(Room::where('id', '=', Session::get('room_id'))->exists())
         {
             Session::flash('status', 'room is deleted');
             $room->delete();
+            Session::forget('room_id');
             return Redirect::route('room.create');
         }
         else

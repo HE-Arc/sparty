@@ -8,23 +8,17 @@ use Illuminate\Http\Request;
 
 use App\Models\Guest;
 use App\Models\Music;
+use App\Models\User;
 use App\Models\Room;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        if (!Session::has('room_id'))
-        {
-            return Redirect::route('room.create');
-        }
-
-        $room_id = Session::get('room_id');
-        $room = Room::find($room_id);
+        $room = $this->getRoom();
 
         if (!$room)
         {
-            Session::flash('status', 'Room was deleted');
             return Redirect::route('room.create');
         }
 
@@ -44,7 +38,7 @@ class AdminController extends Controller
         {
             $uri = $nextTracks[$i]['uri'];
             $music = Music::where('uri', '=', $uri)
-                    ->where('room_id', '=',$room_id)
+                    ->where('room_id', '=', $room->id)
                     ->first();
 
             if ($music)
@@ -69,13 +63,7 @@ class AdminController extends Controller
 
     public function deleteTrack(Request $request)
     {
-        if (!Session::has('room_id'))
-        {
-            return Redirect::route('admin');
-        }
-
-        $room_id = Session::get('room_id');
-        $room = Room::find($room_id);
+        $room = $this->getRoom();
 
         if (!$room)
         {
@@ -92,13 +80,7 @@ class AdminController extends Controller
 
     public function banGuest(Request $request)
     {
-        if (!Session::has('room_id'))
-        {
-            return Redirect::route('admin');
-        }
-
-        $room_id = Session::get('room_id');
-        $room = Room::find($room_id);
+        $room = $this->getRoom();
 
         if (!$room)
         {
@@ -111,5 +93,63 @@ class AdminController extends Controller
         }
 
         return Redirect::route('admin');
+    }
+
+    public function addAdmin(Request $request)
+    {
+        $room = $this->getRoom();
+
+        if (!$room)
+        {
+            return Redirect::route('admin');
+        }
+
+        if ($request->username)
+        {
+            $room->addAdmin($request->username);
+        }
+
+        return Redirect::route('admin');
+    }
+
+    private function getRoom()
+    {
+        if (!Session::has('room_id'))
+        {
+            return null;
+        }
+
+        $room_id = Session::get('room_id');
+        $room = Room::find($room_id);
+
+        if (!$room)
+        {
+            Session::flash('status', 'Room was deleted');
+            return null;
+        }
+
+        $username = Session::get("username");
+
+        if (!$username)
+        {
+            Session::flash('status', 'You are not connected');
+            return null;
+        }
+
+        $user = User::where('username', '=', $username)->first();
+
+        if (!$user)
+        {
+            Session::flash('status', 'User was deleted');
+            return null;
+        }
+
+        if (!$user->isAdmin($room))
+        {
+            Session::flash('status', 'You are not admin of the room');
+            return null;
+        }
+
+        return $room;
     }
 }

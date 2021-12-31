@@ -40,6 +40,11 @@ class Room extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function admins()
+    {
+        return $this->belongsToMany(User::class, 'admins');
+    }
+
     private function addInPlaylist($uri)
     {
         $offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri);
@@ -109,15 +114,13 @@ class Room extends Model
 
     public function addMusic($uri, $guest_id)
     {
-        $guest = Guest::where('id', '=', $guest_id)
+        if (!Guest::find($guest_id)
                 ->where('room_id', '=', $this->id)
-                ->first();
-
-        if (!$guest)
+                ->exists())
         {
             return false;
         }
-        //guest no associé a la room
+
         if (!$this->addInPlaylist($uri))
         {
             return false;
@@ -177,5 +180,22 @@ class Room extends Model
 
         $guest->delete();
         return true;
+    }
+
+    public function addAdmin($username)
+    {
+        $user = User::where('username', '=', $username)->first();
+
+        if (!$user)
+        {
+            return false;
+        }
+
+        if ($user->isAdmin($this))
+        {
+            return false;
+        }
+
+        $user->roomsWhereAdmin()->attach($this->id);
     }
 }

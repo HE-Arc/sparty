@@ -38,3 +38,4 @@ Route::get('/vote', [RoomController::class, 'vote'])->name('vote');
 Route::get('/admin', [AdminController::class, 'index'])->name('admin');
 Route::post('/delete_track', [AdminController::class, 'deleteTrack'])->name('deleteTrack');
 Route::post('/ban_guest', [AdminController::class, 'banGuest'])->name('banGuest');
+Route::post('/add_admin', [AdminController::class, 'addAdmin'])->name('addAdmin');
