@@ -20,9 +20,17 @@
   </div>
 
   <form @submit.prevent="addAdmin()">
-      <label for="username">Username</label>
-      <breeze-input type="text" id="username" v-model="formAdmin.username" required autocomplete="username"/>
-      <breeze-button type="submit">Add admin</breeze-button>
+    <label for="username">Username</label>
+    <breeze-input type="text" id="username" v-model="formAdmin.username" required autocomplete="username"/>
+     <breeze-button type="submit">Add admin</breeze-button>
+  </form>
+
+  <form v-if="canJoin" @submit.prevent="lockRoom(canJoin)">
+    <breeze-button type="submit">Lock room</breeze-button>
+  </form>
+
+  <form v-else @submit.prevent="lockRoom(canJoin)">
+    <breeze-button type="submit">Unlock room</breeze-button>
   </form>
 </template>
 
@@ -49,7 +57,8 @@ export default {
     props: [
         'status',
         'roomName',
-        'nextTracks'
+        'nextTracks',
+        'canJoin'
     ],
 
     methods: {
@@ -65,6 +74,11 @@ export default {
 
         addAdmin() {
             this.formAdmin.post(this.route('addAdmin'));
+        },
+
+        lockRoom(canJoin) {
+            this.formLock.lock = canJoin;
+            this.formLock.post(this.route('lockRoom'));
         }
     },
 
@@ -81,6 +95,10 @@ export default {
             formAdmin: this.$inertia.form({
                 username: ''
             }),
+
+            formLock: this.$inertia.form({
+                lock: false
+            })
         }
     }
 };

@@ -23908,7 +23908,7 @@ __webpack_require__.r(__webpack_exports__);
     BreezeNavLink: _Components_NavLink_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
     NavBar: _components_sparty_NavBar_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
-  props: ['status', 'roomName', 'nextTracks'],
+  props: ['status', 'roomName', 'nextTracks', 'canJoin'],
   methods: {
     deleteTrack: function deleteTrack(track) {
       this.formDelete.uri = track.uri;
@@ -23920,6 +23920,10 @@ __webpack_require__.r(__webpack_exports__);
     },
     addAdmin: function addAdmin() {
       this.formAdmin.post(this.route('addAdmin'));
+    },
+    lockRoom: function lockRoom(canJoin) {
+      this.formLock.lock = canJoin;
+      this.formLock.post(this.route('lockRoom'));
     }
   },
   data: function data() {
@@ -23932,6 +23936,9 @@ __webpack_require__.r(__webpack_exports__);
       }),
       formAdmin: this.$inertia.form({
         username: ''
+      }),
+      formLock: this.$inertia.form({
+        lock: false
       })
     };
   }
@@ -25680,6 +25687,10 @@ var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 
 var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Add admin");
 
+var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Lock room");
+
+var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Unlock room");
+
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Head = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Head");
 
@@ -25762,7 +25773,39 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   })], 32
   /* HYDRATE_EVENTS */
-  )], 64
+  ), $props.canJoin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("form", {
+    key: 1,
+    onSubmit: _cache[2] || (_cache[2] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+      return $options.lockRoom($props.canJoin);
+    }, ["prevent"]))
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_breeze_button, {
+    type: "submit"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [_hoisted_8];
+    }),
+    _: 1
+    /* STABLE */
+
+  })], 32
+  /* HYDRATE_EVENTS */
+  )) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("form", {
+    key: 2,
+    onSubmit: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+      return $options.lockRoom($props.canJoin);
+    }, ["prevent"]))
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_breeze_button, {
+    type: "submit"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [_hoisted_9];
+    }),
+    _: 1
+    /* STABLE */
+
+  })], 32
+  /* HYDRATE_EVENTS */
+  ))], 64
   /* STABLE_FRAGMENT */
   );
 }

@@ -36,6 +36,7 @@ Route::get('/createAccount', [UserController::class, 'create'])->name('createAcc
 Route::post('/addMusic', [RoomController::class, 'addMusic'])->name('addMusic');
 Route::get('/vote', [RoomController::class, 'vote'])->name('vote');
 Route::get('/admin', [AdminController::class, 'index'])->name('admin');
-Route::post('/delete_track', [AdminController::class, 'deleteTrack'])->name('deleteTrack');
-Route::post('/ban_guest', [AdminController::class, 'banGuest'])->name('banGuest');
-Route::post('/add_admin', [AdminController::class, 'addAdmin'])->name('addAdmin');
+Route::post('/delete-track', [AdminController::class, 'deleteTrack'])->name('deleteTrack');
+Route::post('/ban-guest', [AdminController::class, 'banGuest'])->name('banGuest');
+Route::post('/add-admin', [AdminController::class, 'addAdmin'])->name('addAdmin');
+Route::post('/lock-room', [AdminController::class, 'lockRoom'])->name('lockRoom');

@@ -146,7 +146,6 @@ class RoomController extends Controller
             'max_vote' => $request->vote
         ]);
 
-        $room->spotify->playPlaylist($playlist_id);
         event(new Registered($room));
 
         Session::forget('room_id');

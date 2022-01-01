@@ -30,7 +30,8 @@ class AdminController extends Controller
             return inertia('Sparty/Admin/Index', [
                 'status' => Session::get('status'),
                 'roomName' => $room->name,
-                'nextTracks' => []
+                'nextTracks' => [],
+                'canJoin' => $room->can_join
             ]);
         }
 
@@ -57,7 +58,8 @@ class AdminController extends Controller
         return inertia('Sparty/Admin/Index', [
             'status' => Session::get('status'),
             'roomName' => $room->name,
-            'nextTracks' => $nextTracks
+            'nextTracks' => $nextTracks,
+            'canJoin' => $room->can_join
         ]);
     }
 
@@ -107,6 +109,24 @@ class AdminController extends Controller
         if ($request->username)
         {
             $room->addAdmin($request->username);
+        }
+
+        return Redirect::route('admin');
+    }
+
+    public function lockRoom(Request $request)
+    {
+        $room = $this->getRoom();
+
+        if (!$room)
+        {
+            return Redirect::route('admin');
+        }
+
+        if ($request->lock !== null)
+        {
+            $room->can_join = !$request->lock;
+            $room->save();
         }
 
         return Redirect::route('admin');
