@@ -68,6 +68,11 @@ class RoomController extends Controller
 
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
+        if(!$room)
+        {
+            Session::flash('status', "Room was deleted !");
+            return Redirect::route('room.create');
+        }
 
         $refresh = $room->user->refresh;
 
@@ -89,8 +94,16 @@ class RoomController extends Controller
      */
     public function create()
     {
+        $username = Session::get('username');
+        $user = User::where('username', '=', $username)->first();
+        if ($user == null)
+        {
+            Session::flash('status', "User not connected !");
+            return Redirect::route('user.index');
+        }
+
         return Inertia::render('Sparty/Room/CreateRoom', [
-            'status' => Session::get('status'),
+            'status' => Session::get('status')
         ]);
     }
 
@@ -105,7 +118,7 @@ class RoomController extends Controller
         $request->validate([
             'roomname' => 'required|string|max:255',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'vote'     => 'required|numeric|min:2|max:100'
+            'vote'     => 'required|numeric|max:100'
         ]);
 
         if(Room::where('name', '=', $request->roomname)->exists())
@@ -202,7 +215,7 @@ class RoomController extends Controller
 
         if (!Session::has('guest_id'))
         {
-            $guest_ID = 4; //@TODO
+            $guest_ID = 6; //@TODO
         }
         else
         {
@@ -221,15 +234,28 @@ class RoomController extends Controller
         }
     }
 
-    public function vote(){
+    public function vote(Request $request){
 
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
+        if(!$room)
+        {
+            Session::flash('status', "Room doesn't exist !");
+            return Redirect::route('room.create');
+        }
 
-        //music joué dans la session uri, si vote skip meme musique  @TODO
-        $room->voteSkip();
+        if (Session::get('music_voted') == $request->currentPlaying['uri'])
+        {
+            Session::flash('status', 'already voted for this music'); //@TODO mettre dans success
+        }
+        else
+        {
+            $room->voteSkip();
+            Session::forget('music_voted');
+            Session::put('music_voted', $request->currentPlaying['uri']);
+            Session::flash('status', 'vote added for this music'); //@TODO mettre dans success
+        }
 
-        Session::flash('status', 'vote number added' . $room->vote_nb); //@TODO mettre dans success
         return Redirect::route('room.index');
     }
 

@@ -27,7 +27,7 @@
                     <div class="col-md-4">
                         <h2>button zone</h2>
                             <button @click="destroy(roomid)" class="btn btn-danger">Delete the room</button>
-                            <button @click="voteSkip()" class="btn btn-success">Vote skip</button>
+                            <button @click="voteSkip(currentPlaying)" class="btn btn-success">Vote skip</button>
                             <button @click="copy()" class="btn btn-info">Copy url</button>
                     </div>
                 </div>
@@ -68,8 +68,8 @@ export default {
         destroy(id) {
             Inertia.delete(route('room.destroy', id));
         },
-        voteSkip(){
-            Inertia.visit(route('vote'));
+        voteSkip(currentPlaying){
+            Inertia.visit(route('vote'), { method: 'post', data: {currentPlaying: currentPlaying, }, });
         },
         submit(){
             this.form

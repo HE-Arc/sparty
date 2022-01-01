@@ -84,7 +84,7 @@ class Room extends Model
     {
         ++$this->vote_nb;
 
-        if ($this->vote_nb == $this->max_vote)
+        if ($this->vote_nb == $this->max_vote || $this->max_vote == -1)
         {
             $this->vote_nb = 0;
         }

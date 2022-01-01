@@ -33,5 +33,5 @@ Route::post('/checkLogin', [UserController::class, 'checkLogin'])->name('checkLo
 Route::post('/delete', [RoomController::class, 'delete'])->name('delete');
 Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');
 Route::post('/addMusic', [RoomController::class, 'addMusic'])->name('addMusic');
-Route::get('/vote', [RoomController::class, 'vote'])->name('vote');
+Route::post('/vote', [RoomController::class, 'vote'])->name('vote');
 
