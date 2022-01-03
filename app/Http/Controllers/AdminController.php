@@ -132,6 +132,37 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
+    public function playPlaylist()
+    {
+        $room = $this->getRoom();
+
+        if (!$room)
+        {
+            return Redirect::route('admin');
+        }
+
+        $room->spotify->setShuffle();
+        $room->spotify->playPlaylist($room->playlist_id);
+
+        return Redirect::route('admin');
+    }
+
+    public function deleteRoom()
+    {
+        $room = $this->getRoom();
+
+        if (!$room)
+        {
+            return Redirect::route('admin');
+        }
+
+        $room->delete();
+        Session::forget('room_id');
+
+        return Redirect::route('admin');
+    }
+
+
     private function getRoom()
     {
         if (!Session::has('room_id'))
@@ -160,7 +191,7 @@ class AdminController extends Controller
 
         if (!$user)
         {
-            Session::flash('status', 'User was deleted');
+            Session::flash('status', 'You are not connected');
             return null;
         }
 

@@ -54,14 +54,14 @@ class Room extends Model
             return $this->spotify->addToPlaylist($this->playlist_id, $uri);
         }
 
-        $uri_playing = $this->spotify->currentlyPlaying()['uri'];
+        $track_playing = $this->spotify->currentlyPlaying();
 
-        if (!$uri_playing)
+        if (!$track_playing)
         {
             return false;
         }
 
-        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri_playing);
+        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $track_playing['uri']);
 
         if ($offset >= $playing_offset)
         {
@@ -114,7 +114,7 @@ class Room extends Model
 
     public function addMusic($uri, $guest_id)
     {
-        if (!Guest::find($guest_id)
+        if (!Guest::where('id', '=', $guest_id)
                 ->where('room_id', '=', $this->id)
                 ->exists())
         {
@@ -155,6 +155,13 @@ class Room extends Model
         if ($music)
         {
             $music->delete();
+        }
+
+        $track_playing = $this->spotify->currentlyPlaying();
+
+        if ($track_playing && $track_playing['uri'] == $uri)
+        {
+            $this->spotify->skipTrack();
         }
 
         return $this->spotify->removeFromPlaylist($this->playlist_id, $uri);

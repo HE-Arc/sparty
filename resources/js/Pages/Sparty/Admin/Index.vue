@@ -3,7 +3,7 @@
   <NavBar/>
 
   <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
-      {{status}}
+    {{status}}
   </div>
 
   <div v-for="track in nextTracks" :key="track.uri">
@@ -31,6 +31,14 @@
 
   <form v-else @submit.prevent="lockRoom(canJoin)">
     <breeze-button type="submit">Unlock room</breeze-button>
+  </form>
+
+  <form @submit.prevent="playPlaylist()">
+    <breeze-button type="submit">Play music</breeze-button>
+  </form>
+
+  <form @submit.prevent="deleteRoom()">
+    <breeze-button type="submit">Delete room</breeze-button>
   </form>
 </template>
 
@@ -79,6 +87,14 @@ export default {
         lockRoom(canJoin) {
             this.formLock.lock = canJoin;
             this.formLock.post(this.route('lockRoom'));
+        },
+
+        playPlaylist() {
+            this.formDelete.post(this.route('playPlaylist'));
+        },
+
+        deleteRoom() {
+            this.formDelete.post(this.route('deleteRoom'));
         }
     },
 

@@ -202,7 +202,7 @@ class RoomController extends Controller
 
         if (!Session::has('guest_id'))
         {
-            $guest_ID = 5; //@TODO
+            $guest_ID = 7; //@TODO
         }
         else
         {
