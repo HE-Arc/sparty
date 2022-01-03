@@ -87,35 +87,19 @@ class Room extends Model
         return $this->spotify->getNextTracks($this->playlist_id, $playing_offset, $max);
     }
 
-    private function checkLastVote()
+    public function voteSkip()
     {
         $track_playing = $this->spotify->currentlyPlaying();
 
         if (!$track_playing)
         {
-            return false;
-        }
-
-        if (!Session::has('last_voted'))
-        {
-            Session::put('last_voted', $track_playing['uri']);
-            return true;
-        }
-
-        if (Session::get('last_voted') == $track_playing['uri'])
-        {
-            return false;
-        }
-
-        Session::put('last_voted', $track_playing['uri']);
-        return true;
-    }
-
-    public function voteSkip()
-    {
-        if (!$this->checkLastVote())
-        {
             return;
+        }
+
+        if ($this->last_voted != $track_playing['uri'])
+        {
+            $this->last_voted = $track_playing['uri'];
+            $this->vote_nb = 0;
         }
 
         ++$this->vote_nb;
