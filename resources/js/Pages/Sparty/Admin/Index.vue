@@ -6,40 +6,83 @@
     {{status}}
   </div>
 
-  <div v-for="track in nextTracks" :key="track.uri">
-    <form @submit.prevent="deleteTrack(track)">
-      <h1>{{track.name}}</h1>
-      <h2>{{track.artist}}</h2>
-      <breeze-button type="submit">Delete track</breeze-button>
-    </form>
+  <div class="p-3">
+  <div class="row g-5">
+  <div class="col-md-6">
 
-    <form v-if="track.guest_name != ''" @submit.prevent="banUser(track)">
-      <h2>{{track.guest_name}}</h2>
-      <breeze-button type="submit">Ban user</breeze-button>
-    </form>
+  <div class="card">
+  <div class="card-header">
+    <h2>Room administration</h2>
   </div>
 
-  <form @submit.prevent="addAdmin()">
+  <div class="card-body">
+    
+  <div class="row">
+  
+  <div class="col-auto">
+  <form v-if="canJoin" @submit.prevent="lockRoom(canJoin)" class="mb-3">
+    <breeze-button type="submit" class="btn btn-primary">Lock room</breeze-button>
+  </form>
+
+  <form v-else @submit.prevent="lockRoom(canJoin)" class="mb-3">
+    <breeze-button type="submit" class="btn btn-primary">Unlock room</breeze-button>
+  </form>
+  </div>
+
+  <div class="col-auto">
+  <form @submit.prevent="playPlaylist()" class="mb-3">
+    <breeze-button type="submit" class="btn btn-primary">Play music</breeze-button>
+  </form>
+  </div>
+
+  <div class="col-auto">
+  <form @submit.prevent="deleteRoom()" class="mb-3">
+    <breeze-button type="submit" class="btn btn-danger">Delete room</breeze-button>
+  </form>
+  </div>
+
+  </div>
+
+  <hr>
+
+  <form @submit.prevent="addAdmin()" class="mb-3">
     <label for="username">Username</label>
     <breeze-input type="text" id="username" v-model="formAdmin.username" required autocomplete="username"/>
-     <breeze-button type="submit">Add admin</breeze-button>
+    <br>
+    <breeze-button type="submit" class="btn btn-primary">Add admin</breeze-button>
   </form>
 
-  <form v-if="canJoin" @submit.prevent="lockRoom(canJoin)">
-    <breeze-button type="submit">Lock room</breeze-button>
-  </form>
+  </div>
+  </div>
+  </div>
 
-  <form v-else @submit.prevent="lockRoom(canJoin)">
-    <breeze-button type="submit">Unlock room</breeze-button>
-  </form>
+  <div class="col-md-6">
 
-  <form @submit.prevent="playPlaylist()">
-    <breeze-button type="submit">Play music</breeze-button>
-  </form>
+  <div v-for="track in nextTracks" :key="track.uri">
+    <div class="card mb-3">
+    <div class="card-header">
+      <h3>{{track.name}}</h3>
+      <h4>{{track.artist}}</h4>
+    </div>
 
-  <form @submit.prevent="deleteRoom()">
-    <breeze-button type="submit">Delete room</breeze-button>
-  </form>
+    <div class="card-body">
+
+    <form @submit.prevent="deleteTrack(track)" class="mb-3">
+      <breeze-button type="submit" class="btn btn-primary">Delete track</breeze-button>
+    </form>
+
+    <form v-if="track.guest_name != ''" @submit.prevent="banUser(track)" class="mb-3">
+      <h4>User: {{track.guest_name}}</h4>
+      <breeze-button type="submit" class="btn btn-danger">Ban user</breeze-button>
+    </form>
+
+    </div>
+    </div>
+  </div>
+
+  </div>
+  </div>
+  </div>
 </template>
 
 <script>
