@@ -2,7 +2,7 @@
   <Head title="Admin"/>
   <NavBar/>
 
-  <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
+  <div v-if="status" class="alert alert-warning mb-3 rounded-0" role="alert">
     {{status}}
   </div>
 
@@ -12,7 +12,7 @@
 
   <div class="card">
   <div class="card-header">
-    <h2>Room administration</h2>
+    <h2>{{roomName}} administration</h2>
   </div>
 
   <div class="card-body">

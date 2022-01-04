@@ -93,6 +93,7 @@ class Room extends Model
 
         if (!$track_playing)
         {
+            Session::flash('status', 'Music is not playing');
             return;
         }
 
@@ -114,7 +115,12 @@ class Room extends Model
         if ($this->vote_nb == 0)
         {
             $this->spotify->skipTrack();
+            Session::flash('status', 'Music skipped');
+
+            return;
         }
+
+        Session::flash('status', $this->max_vote - $this->vote_nb . ' vote(s) left to skip');
     }
 
     public function createGuest()
@@ -133,11 +139,13 @@ class Room extends Model
                 ->where('room_id', '=', $this->id)
                 ->exists())
         {
+            Session::flash('status', 'Your are not allowed to add music to the room');
             return false;
         }
 
         if (!$this->addInPlaylist($uri))
         {
+            Session::flash('status', 'There was an error with Spotify');
             return false;
         }
 
@@ -158,6 +166,8 @@ class Room extends Model
         }
 
         $music->save();
+        Session::flash('status', 'Music added');
+
         return true;
     }
 
@@ -179,6 +189,7 @@ class Room extends Model
             $this->spotify->skipTrack();
         }
 
+        Session::flash('status', 'Music removed');
         return $this->spotify->removeFromPlaylist($this->playlist_id, $uri);
     }
 
@@ -190,6 +201,7 @@ class Room extends Model
 
         if (!$guest)
         {
+            Session::flash('status', 'User doesn\'t exist');
             return false;
         }
 
@@ -201,6 +213,8 @@ class Room extends Model
         }
 
         $guest->delete();
+        Session::flash('status', 'User banned');
+
         return true;
     }
 
@@ -210,14 +224,17 @@ class Room extends Model
 
         if (!$user)
         {
+            Session::flash('status', 'User doesn\'t exist');
             return false;
         }
 
         if ($user->isAdmin($this))
         {
+            Session::flash('status', 'User is already admin');
             return false;
         }
 
         $user->roomsWhereAdmin()->attach($this->id);
+        Session::flash('status', 'Admin added');
     }
 }

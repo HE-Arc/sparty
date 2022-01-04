@@ -19,7 +19,7 @@ class AdminController extends Controller
 
         if (!$room)
         {
-            return Redirect::route('room.create');
+            return Redirect::route('room.index');
         }
 
         $nextTracks = $room->getNextTracks(20);
