@@ -56,18 +56,20 @@ class RoomController extends Controller
 
             if ($nextTrack)
             {
-                if (count($nextTrack) == 2)
+                if (count($nextTrack) == 1)
                 {
-                    $nextTrack = $nextTrack[1];
+                    $nextTrack[1] = '';
+                    $nextTrack[2] = '';
                 }
-                else
+                else if (count($nextTrack) == 2)
                 {
-                    $nextTrack = '';
+                    $nextTrack[2] = '';
                 }
             }
             else
             {
-                $nextTrack = '';
+                $nextTrack[1] = '';
+                $nextTrack[2] = '';
             }
 
             $isAdmin = false;
@@ -232,11 +234,6 @@ class RoomController extends Controller
             $errorMsg = 'Room not found !';
         }
 
-        //if (!Session::has('guest_id'))
-        //{
-        //    $errorMsg = 'Guest has not id !'
-        //}
-
         if (!$errorMsg=='')
         {
             Session::flash('status', $errorMsg);
@@ -249,6 +246,7 @@ class RoomController extends Controller
         if (!Session::has('guest_id'))
         {
             $guest_ID = 7; //@TODO
+            $errorMsg = 'Guest has not id !';
         }
         else
         {
