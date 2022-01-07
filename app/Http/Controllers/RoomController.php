@@ -294,4 +294,33 @@ class RoomController extends Controller
         }
 
     }
+
+    public function checkRoom(Request $request)
+    {
+        $roomname = $request->input('roomname');
+        $password = $request->input('password');
+        $hash_password = null;
+
+        if (Room::where('name', '=', $roomname)->exists())
+        {
+            $hash_password = Room::where('name', '=', $roomname)->first()->password;
+        }
+
+        if ($hash_password != null && Hash::check($password, $hash_password))
+        {
+            Session::push('room_id', Room::where('name', '=', $roomname)->first()->id);
+        }
+        else
+        {
+            Session::flash('status', 'Wrong name or password for the room!');
+        }
+        return Redirect::route('room.index');
+    }
+
+    public function joinRoom()
+    {
+        return inertia('Sparty/Room/JoinRoom', [
+                'status' => Session::get('status'),
+            ]);
+    }
 }
