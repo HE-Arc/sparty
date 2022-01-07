@@ -4,14 +4,21 @@
 
   <div class="card-body">
     <div class="container">
-         <div class="col-md-12"><h1 class="text-center">{{ roomname }}</h1>
-            <div v-for="track in trackArray" :key="track.name">
-                <form @submit.prevent="submit(track)">
-                    <h2>{{track.name ?? "Unknown"}}</h2>
-                    <h2>{{track.artist ?? "Unknown"}}</h2>
-                    <breeze-input type="hidden" required v-model="track.uri"/>
-                    <breeze-button v-on:click="submit" type="submit"><img :src="track.image" :alt="track.name"/></breeze-button>
-                </form>
+         <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center">{{ roomname }}</h1>
+                <div class="row">
+                    <div v-for="track in trackArray" :key="track.name" class="col-md-4">
+                        <form @submit.prevent="submit(track)">
+                            <p class="text-uppercase">
+                                {{track.name ?? "Unknown"}},
+                                {{track.artist ?? "Unknown"}}
+                            </p>
+                            <breeze-input type="hidden" required v-model="track.uri"/>
+                            <breeze-button v-on:click="submit" type="submit"><img :src="track.image" :alt="track.name"/></breeze-button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

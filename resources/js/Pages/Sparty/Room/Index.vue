@@ -14,29 +14,28 @@
             </div>
         </div>
         <div class="py-1 text-center container">
-                <div class="row py-lg-1">
-                    <div class="col-md-12">
-                        <p class="lead text-muted">
-                            Explore and add a music of your choice in the room with the search bar
-                        </p>
-                        <form @submit.prevent="submit">
-                            <div class="form-group">
-                                <breeze-label for="search" class="fw-light">Search bar : </breeze-label>
-                                <breeze-input id="search" class="form-control form-control-lg" type="text" v-model="form.search" required placeholder="title of music or name of artist..." autofocus autocomplete="search">Search</breeze-input>
-                                <CustomButton type="submit" class="btn btn-primary my-2">Search</CustomButton>
-                            </div>
-                        </form>
-                        <div class="col-md-4 btn-group justify-content-between">
-                            <Link v-if="isAdmin" href="/admin" as="button" class="btn btn-danger">Admin</Link>
-                            <div v-if="currentPlaying != ''">
-                                <button v-if="canVote" @click="voteSkip(currentPlaying)" class="btn btn-secondary">Vote skip</button>
-                            </div>
+            <div class="row py-lg-1">
+                <div class="col-md-12">
+                    <p class="lead text-muted">
+                        Explore and add a music of your choice in the room with the search bar
+                    </p>
+                    <form @submit.prevent="submit">
+                        <div class="form-group">
+                            <breeze-label for="search" class="fw-light">Search bar : </breeze-label>
+                            <breeze-input id="search" class="form-control form-control-lg" type="text" v-model="form.search" required placeholder="title of music or name of artist..." autofocus autocomplete="search">Search</breeze-input>
+                            <CustomButton type="submit" class="btn btn-primary my-2">Search</CustomButton>
+                        </div>
+                    </form>
+                    <div class="col-md-2 btn-group justify-content-between">
+                        <Link v-if="isAdmin" href="/admin" as="button" class="btn btn-danger">Admin</Link>
+                        <div v-if="currentPlaying != ''">
+                            <button v-if="canVote" @click="voteSkip(currentPlaying)" class="btn btn-secondary">Vote skip</button>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
-
-        <div v-if="currentPlaying != ''" class="album py-5 bg-light">
+        <div v-if="currentPlaying != ''" class="album py-3">
             <div class="container">
                 <div class="row">
                     <div class="col-md-4">
@@ -44,11 +43,11 @@
                         <MusicComponent :currentPlaying="currentPlaying" ></MusicComponent>
                     </div>
                     <div v-if="nextTrack[1] != ''" class="col-md-4">
-                        <h3>Next track:</h3>
+                        <h3>Next track 1:</h3>
                         <MusicComponent :currentPlaying="nextTrack[1]" ></MusicComponent>
                     </div>
                     <div v-if="nextTrack[2] != ''" class="col-md-4">
-                        <h3>Next track:</h3>
+                        <h3>Next track 2:</h3>
                         <MusicComponent :currentPlaying="nextTrack[2]" ></MusicComponent>
                     </div>
                 </div>
