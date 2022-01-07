@@ -53,11 +53,26 @@ class RoomController extends Controller
                 $currentlyPlaying = '';
             }
 
+            $isAdmin = false;
+            $username = Session::get("username");
+
+            if ($username)
+            {
+                $user = User::where('username', '=', $username)->first();
+
+                if ($user)
+                {
+                    $isAdmin = $user->isAdmin($room);
+                }
+            }
+
             return Inertia::render('Sparty/Room/Index', [
                 'status' => Session::get('status'),
                 'roomname' => $room->name,
                 'currentPlaying' => $currentlyPlaying,
-                'roomid' => $room_id
+                'roomid' => $room_id,
+                'isAdmin' => $isAdmin,
+                'canVote' => $room->max_vote != -1
             ]);
         }
 
@@ -215,7 +230,7 @@ class RoomController extends Controller
 
         if (!Session::has('guest_id'))
         {
-            $guest_ID = 6; //@TODO
+            $guest_ID = 7; //@TODO
         }
         else
         {
@@ -253,7 +268,6 @@ class RoomController extends Controller
             $room->voteSkip();
             Session::forget('music_voted');
             Session::put('music_voted', $request->currentPlaying['uri']);
-            Session::flash('status', 'vote added for this music'); //@TODO mettre dans success
         }
 
         return Redirect::route('room.index');

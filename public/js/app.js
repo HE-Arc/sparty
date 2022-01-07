@@ -23969,6 +23969,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_ValidationErrors_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/Components/ValidationErrors.vue */ "./resources/js/Components/ValidationErrors.vue");
 /* harmony import */ var _Components_Checkbox_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @/Components/Checkbox.vue */ "./resources/js/Components/Checkbox.vue");
 /* harmony import */ var _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @inertiajs/inertia-vue3 */ "./node_modules/@inertiajs/inertia-vue3/dist/index.js");
+/* harmony import */ var _components_sparty_NavBar_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/components/sparty/NavBar.vue */ "./resources/js/components/sparty/NavBar.vue");
+
 
 
 
@@ -23983,7 +23985,8 @@ __webpack_require__.r(__webpack_exports__);
     BreezeLabel: _Components_Label_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     BreezeValidationErrors: _Components_ValidationErrors_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
     BreezeCheckbox: _Components_Checkbox_vue__WEBPACK_IMPORTED_MODULE_4__["default"],
-    Link: _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_5__.Link
+    Link: _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_5__.Link,
+    NavBar: _components_sparty_NavBar_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
   },
   props: {
     status: String
@@ -24037,6 +24040,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @inertiajs/inertia */ "./node_modules/@inertiajs/inertia/dist/index.js");
 /* harmony import */ var _Components_NavLink_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @/Components/NavLink.vue */ "./resources/js/Components/NavLink.vue");
 /* harmony import */ var _components_sparty_CurrentlyPlaying_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @/components/sparty/CurrentlyPlaying.vue */ "./resources/js/components/sparty/CurrentlyPlaying.vue");
+/* harmony import */ var _components_sparty_NavBar_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @/components/sparty/NavBar.vue */ "./resources/js/components/sparty/NavBar.vue");
+
 
 
 
@@ -24047,8 +24052,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function currently() {
   _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_4__.Inertia.reload();
-} //window.setInterval(currently, 20000)
-
+}
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -24058,12 +24062,10 @@ function currently() {
     BreezeInput: _Components_Input_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
     BreezeLabel: _Components_Label_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
     BreezeNavLink: _Components_NavLink_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
-    CurrentPlaying: _components_sparty_CurrentlyPlaying_vue__WEBPACK_IMPORTED_MODULE_6__["default"]
+    CurrentPlaying: _components_sparty_CurrentlyPlaying_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    NavBar: _components_sparty_NavBar_vue__WEBPACK_IMPORTED_MODULE_7__["default"]
   },
   methods: {
-    destroy: function destroy(id) {
-      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_4__.Inertia["delete"](route('room.destroy', id));
-    },
     voteSkip: function voteSkip(currentPlaying) {
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_4__.Inertia.visit(route('vote'), {
         method: 'post',
@@ -24074,11 +24076,9 @@ function currently() {
     },
     submit: function submit() {
       this.form.get(this.route('search'));
-    },
-    copy: function copy() {//
     }
   },
-  props: ['status', 'trackname', 'roomname', 'currentPlaying', 'roomid'],
+  props: ['status', 'trackname', 'roomname', 'currentPlaying', 'roomid', 'isAdmin', 'canVote'],
   data: function data() {
     return {
       form: this.$inertia.form({
@@ -24104,6 +24104,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Components_Button_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/Components/Button.vue */ "./resources/js/Components/Button.vue");
 /* harmony import */ var _Components_Input_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @/Components/Input.vue */ "./resources/js/Components/Input.vue");
 /* harmony import */ var _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @inertiajs/inertia-vue3 */ "./node_modules/@inertiajs/inertia-vue3/dist/index.js");
+/* harmony import */ var _components_sparty_NavBar_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @/components/sparty/NavBar.vue */ "./resources/js/components/sparty/NavBar.vue");
+
 
 
 
@@ -24112,7 +24114,8 @@ __webpack_require__.r(__webpack_exports__);
     Head: _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_2__.Head,
     BreezeButton: _Components_Button_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
     BreezeInput: _Components_Input_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
-    Link: _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_2__.Link
+    Link: _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_2__.Link,
+    NavBar: _components_sparty_NavBar_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   props: ['trackArray', 'roomname'],
   data: function data() {
@@ -25688,7 +25691,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var _hoisted_1 = {
   key: 0,
-  "class": "alert alert-danger mb-3 rounded-0",
+  "class": "alert alert-warning mb-3 rounded-0",
   role: "alert"
 };
 var _hoisted_2 = {
@@ -25985,6 +25988,8 @@ var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNod
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Head = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Head");
 
+  var _component_NavBar = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("NavBar");
+
   var _component_breeze_validation_errors = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("breeze-validation-errors");
 
   var _component_breeze_label = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("breeze-label");
@@ -25995,7 +26000,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Head, {
     title: "Create room"
-  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_breeze_validation_errors, {
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_NavBar), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_breeze_validation_errors, {
     "class": "mb-3"
   }), $props.status ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.status), 1
   /* TEXT */
@@ -26180,8 +26185,12 @@ var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
+var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Admin");
+
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Head = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Head");
+
+  var _component_NavBar = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("NavBar");
 
   var _component_breeze_validation_errors = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("breeze-validation-errors");
 
@@ -26193,9 +26202,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   var _component_current_playing = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("current-playing");
 
+  var _component_Link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Link");
+
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Head, {
     title: "Room"
-  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_breeze_validation_errors, {
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_NavBar), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_breeze_validation_errors, {
     "class": "mb-3"
   }), $props.status ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.status), 1
   /* TEXT */
@@ -26251,22 +26262,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     currentPlaying: $props.currentPlaying
   }, null, 8
   /* PROPS */
-  , ["currentPlaying"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    onClick: _cache[2] || (_cache[2] = function ($event) {
-      return $options.destroy($props.roomid);
+  , ["currentPlaying"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_hoisted_15, $props.isAdmin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Link, {
+    key: 0,
+    href: "route('admin')",
+    as: "button",
+    "class": "btn btn-primary"
+  }, {
+    "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
+      return [_hoisted_16];
     }),
-    "class": "btn btn-danger"
-  }, "Delete the room"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    onClick: _cache[3] || (_cache[3] = function ($event) {
+    _: 1
+    /* STABLE */
+
+  })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $props.canVote ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    key: 1,
+    onClick: _cache[2] || (_cache[2] = function ($event) {
       return $options.voteSkip($props.currentPlaying);
     }),
     "class": "btn btn-success"
-  }, "Vote skip"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    onClick: _cache[4] || (_cache[4] = function ($event) {
-      return $options.copy();
-    }),
-    "class": "btn btn-info"
-  }, "Copy url")])])])])])], 64
+  }, "Vote skip")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])])], 64
   /* STABLE_FRAGMENT */
   );
 }
@@ -26303,13 +26317,15 @@ var _hoisted_6 = ["src", "alt"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Head = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Head");
 
+  var _component_NavBar = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("NavBar");
+
   var _component_breeze_input = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("breeze-input");
 
   var _component_breeze_button = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("breeze-button");
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Head, {
     title: "Search"
-  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", _hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.roomname), 1
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_NavBar), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", _hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.roomname), 1
   /* TEXT */
   ), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.trackArray, function (track) {
     var _track$name, _track$artist;

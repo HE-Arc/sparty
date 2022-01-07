@@ -89,6 +89,12 @@ class Room extends Model
 
     public function voteSkip()
     {
+        if ($this->max_vote == -1)
+        {
+            Session::flash('status', 'Vote skip is blocked');
+            return;
+        }
+
         $track_playing = $this->spotify->currentlyPlaying();
 
         if (!$track_playing)
@@ -105,7 +111,7 @@ class Room extends Model
 
         ++$this->vote_nb;
 
-        if ($this->vote_nb == $this->max_vote || $this->max_vote == -1)
+        if ($this->vote_nb == $this->max_vote)
         {
             $this->vote_nb = 0;
         }

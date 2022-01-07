@@ -1,5 +1,7 @@
 <template>
   <Head title="Search" />
+  <NavBar/>
+
   <div class="card-body">
     <div class="container">
          <div class="col-md-12"><h1 class="text-center">{{ roomname }}</h1>
@@ -20,12 +22,15 @@
 import BreezeButton from '@/Components/Button.vue'
 import BreezeInput from '@/Components/Input.vue'
 import { Head, Link } from '@inertiajs/inertia-vue3'
+import NavBar from '@/components/sparty/NavBar.vue'
+
 export default {
   components: {
     Head,
     BreezeButton,
     BreezeInput,
     Link,
+    NavBar
   },
   props: [
       'trackArray',

@@ -1,5 +1,7 @@
 <template>
   <Head title="Room" />
+  <NavBar/>
+
   <div class="card-body">
    <breeze-validation-errors class="mb-3" />
 
@@ -25,10 +27,8 @@
                 <div class="row">
                     <current-playing :currentPlaying="currentPlaying" ></current-playing>
                     <div class="col-md-4">
-                        <h2>button zone</h2>
-                            <button @click="destroy(roomid)" class="btn btn-danger">Delete the room</button>
-                            <button @click="voteSkip(currentPlaying)" class="btn btn-success">Vote skip</button>
-                            <button @click="copy()" class="btn btn-info">Copy url</button>
+                        <Link v-if="isAdmin" href="/admin" as="button" class="btn btn-primary">Admin</Link>
+                        <button v-if="canVote" @click="voteSkip(currentPlaying)" class="btn btn-success">Vote skip</button>
                     </div>
                 </div>
             </div>
@@ -45,14 +45,11 @@ import BreezeLabel from '@/Components/Label.vue';
 import { Inertia } from '@inertiajs/inertia';
 import BreezeNavLink from '@/Components/NavLink.vue'
 import CurrentPlaying from '@/components/sparty/CurrentlyPlaying.vue'
-
+import NavBar from '@/components/sparty/NavBar.vue'
 
 function currently() {
     Inertia.reload()
 }
-
-//window.setInterval(currently, 20000)
-
 
 export default {
   components: {
@@ -63,21 +60,15 @@ export default {
     BreezeLabel,
     BreezeNavLink,
     CurrentPlaying,
+    NavBar
   },
     methods: {
-        destroy(id) {
-            Inertia.delete(route('room.destroy', id));
-        },
         voteSkip(currentPlaying){
             Inertia.visit(route('vote'), { method: 'post', data: {currentPlaying: currentPlaying, }, });
         },
         submit(){
             this.form
                 .get(this.route('search'))
-        },
-        copy()
-        {
-            //
         }
     },
     props : [
@@ -85,7 +76,9 @@ export default {
         'trackname',
         'roomname',
         'currentPlaying',
-        'roomid'
+        'roomid',
+        'isAdmin',
+        'canVote'
     ],
    data() {
     return {

@@ -1,5 +1,7 @@
 <template>
   <Head title="Create room" />
+  <NavBar/>
+
   <div class="card-body">
 
     <breeze-validation-errors class="mb-3" />
@@ -47,6 +49,8 @@ import BreezeLabel from '@/Components/Label.vue'
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue'
 import BreezeCheckbox from '@/Components/Checkbox.vue'
 import { Head, Link } from '@inertiajs/inertia-vue3'
+import NavBar from '@/components/sparty/NavBar.vue'
+
 export default {
   components: {
     Head,
@@ -56,6 +60,7 @@ export default {
     BreezeValidationErrors,
     BreezeCheckbox,
     Link,
+    NavBar
   },
   props: {
       status: String

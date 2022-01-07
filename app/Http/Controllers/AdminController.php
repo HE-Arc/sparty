@@ -142,7 +142,15 @@ class AdminController extends Controller
         }
 
         $room->spotify->setShuffle();
-        $room->spotify->playPlaylist($room->playlist_id);
+
+        if ($room->spotify->playPlaylist($room->playlist_id))
+        {
+            Session::flash('status', 'Music started');
+        }
+        else
+        {
+            Session::flash('status', 'Can\'t play music, make sure to have music already playing');
+        }
 
         return Redirect::route('admin');
     }
