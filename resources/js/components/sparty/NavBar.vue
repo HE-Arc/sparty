@@ -1,7 +1,7 @@
 <template>
 <nav class="navbar navbar-expand-sm navbar-dark bg-success fs-4 fw-bolder">
   <div class="container-fluid">
-    <a class="navbar-brand w-25" href="#">
+    <a class="navbar-brand w-25" href="/">
     <img class="img-fluid" src="../../../asset/Sparty.svg" alt="sparty">
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">

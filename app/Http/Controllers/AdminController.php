@@ -26,7 +26,6 @@ class AdminController extends Controller
 
         if (!$nextTracks)
         {
-            Session::flash('status', 'The room doesn\'t play music');
             return inertia('Sparty/Admin/Index', [
                 'status' => Session::get('status'),
                 'roomName' => $room->name,

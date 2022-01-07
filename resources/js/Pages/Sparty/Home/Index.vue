@@ -13,7 +13,7 @@
     Just connect your Spotify account, create a room and share it!
   </p>
 
-  <Link href="/join" as="button" class="btn btn-primary btn-lg px-4 gap-3">Join a room</Link>
+  <Link href="/joinRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3">Join a room</Link>
   
   </div>
   </div>
