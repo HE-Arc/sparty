@@ -26,6 +26,7 @@
                 </div>
                 <div class="row">
                     <current-playing :currentPlaying="currentPlaying" ></current-playing>
+                    <current-playing :currentPlaying="nextTrack"></current-playing>
                     <div class="col-md-4">
                         <Link v-if="isAdmin" href="/admin" as="button" class="btn btn-primary">Admin</Link>
                         <button v-if="canVote" @click="voteSkip(currentPlaying)" class="btn btn-success">Vote skip</button>
@@ -76,6 +77,7 @@ export default {
         'trackname',
         'roomname',
         'currentPlaying',
+        'nextTrack',
         'roomid',
         'isAdmin',
         'canVote'

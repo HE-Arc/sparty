@@ -46,11 +46,28 @@ class RoomController extends Controller
             $refresh = $room->user->refresh;
             $spotify = new SpotifyService($refresh);
             $currentlyPlaying = $spotify->currentlyPlaying();
+            $nextTrack = $room->getNextTracks(2);
 
             if ($currentlyPlaying == null)
             {
                 Session::flash('status', "the room does not play any music !");
                 $currentlyPlaying = '';
+            }
+
+            if ($nextTrack)
+            {
+                if (count($nextTrack) == 2)
+                {
+                    $nextTrack = $nextTrack[1];
+                }
+                else
+                {
+                    $nextTrack = '';
+                }
+            }
+            else
+            {
+                $nextTrack = '';
             }
 
             $isAdmin = false;
@@ -70,6 +87,7 @@ class RoomController extends Controller
                 'status' => Session::get('status'),
                 'roomname' => $room->name,
                 'currentPlaying' => $currentlyPlaying,
+                'nextTrack' => $nextTrack,
                 'roomid' => $room_id,
                 'isAdmin' => $isAdmin,
                 'canVote' => $room->max_vote != -1
