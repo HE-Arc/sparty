@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use App\Services\SpotifyService;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
+use App\Services\SpotifyService;
 
 class Room extends Model
 {
@@ -40,6 +42,11 @@ class Room extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function admins()
+    {
+        return $this->belongsToMany(User::class, 'admins');
+    }
+
     private function addInPlaylist($uri)
     {
         $offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri);
@@ -49,14 +56,14 @@ class Room extends Model
             return $this->spotify->addToPlaylist($this->playlist_id, $uri);
         }
 
-        $uri_playing = $this->spotify->currentlyPlaying()['uri'];
+        $track_playing = $this->spotify->currentlyPlaying();
 
-        if (!$uri_playing)
+        if (!$track_playing)
         {
             return false;
         }
 
-        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri_playing);
+        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $track_playing['uri']);
 
         if ($offset >= $playing_offset)
         {
@@ -69,19 +76,33 @@ class Room extends Model
 
     public function getNextTracks($max = 10)
     {
-        $uri_playing = $this->spotify->currentlyPlaying()['uri'];
+        $track_playing = $this->spotify->currentlyPlaying();
 
-        if (!$uri_playing)
+        if (!$track_playing)
         {
             return null;
         }
 
-        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri_playing);
+        $playing_offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $track_playing['uri']);
         return $this->spotify->getNextTracks($this->playlist_id, $playing_offset, $max);
     }
 
     public function voteSkip()
     {
+        $track_playing = $this->spotify->currentlyPlaying();
+
+        if (!$track_playing)
+        {
+            Session::flash('status', 'Music is not playing');
+            return;
+        }
+
+        if ($this->last_voted != $track_playing['uri'])
+        {
+            $this->last_voted = $track_playing['uri'];
+            $this->vote_nb = 0;
+        }
+
         ++$this->vote_nb;
 
         if ($this->vote_nb == $this->max_vote)
@@ -94,7 +115,12 @@ class Room extends Model
         if ($this->vote_nb == 0)
         {
             $this->spotify->skipTrack();
+            Session::flash('status', 'Music skipped');
+
+            return;
         }
+
+        Session::flash('status', $this->max_vote - $this->vote_nb . ' vote(s) left to skip');
     }
 
     public function createGuest()
@@ -109,17 +135,17 @@ class Room extends Model
 
     public function addMusic($uri, $guest_id)
     {
-        $guest = Guest::where('id', '=', $guest_id)
+        if (!Guest::where('id', '=', $guest_id)
                 ->where('room_id', '=', $this->id)
-                ->first();
-
-        if (!$guest)
+                ->exists())
         {
+            Session::flash('status', 'Your are not allowed to add music to the room');
             return false;
         }
-        //guest no associé a la room
+
         if (!$this->addInPlaylist($uri))
         {
+            Session::flash('status', 'There was an error with Spotify');
             return false;
         }
 
@@ -140,6 +166,8 @@ class Room extends Model
         }
 
         $music->save();
+        Session::flash('status', 'Music added');
+
         return true;
     }
 
@@ -154,6 +182,14 @@ class Room extends Model
             $music->delete();
         }
 
+        $track_playing = $this->spotify->currentlyPlaying();
+
+        if ($track_playing && $track_playing['uri'] == $uri)
+        {
+            $this->spotify->skipTrack();
+        }
+
+        Session::flash('status', 'Music removed');
         return $this->spotify->removeFromPlaylist($this->playlist_id, $uri);
     }
 
@@ -165,6 +201,7 @@ class Room extends Model
 
         if (!$guest)
         {
+            Session::flash('status', 'User doesn\'t exist');
             return false;
         }
 
@@ -176,6 +213,28 @@ class Room extends Model
         }
 
         $guest->delete();
+        Session::flash('status', 'User banned');
+
         return true;
+    }
+
+    public function addAdmin($username)
+    {
+        $user = User::where('username', '=', $username)->first();
+
+        if (!$user)
+        {
+            Session::flash('status', 'User doesn\'t exist');
+            return false;
+        }
+
+        if ($user->isAdmin($this))
+        {
+            Session::flash('status', 'User is already admin');
+            return false;
+        }
+
+        $user->roomsWhereAdmin()->attach($this->id);
+        Session::flash('status', 'Admin added');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
@@ -34,4 +35,10 @@ Route::post('/delete', [RoomController::class, 'delete'])->name('delete');
 Route::get('/createAccount', [UserController::class, 'create'])->name('createAccount');
 Route::post('/addMusic', [RoomController::class, 'addMusic'])->name('addMusic');
 Route::get('/vote', [RoomController::class, 'vote'])->name('vote');
-
+Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+Route::post('/delete-track', [AdminController::class, 'deleteTrack'])->name('deleteTrack');
+Route::post('/ban-guest', [AdminController::class, 'banGuest'])->name('banGuest');
+Route::post('/add-admin', [AdminController::class, 'addAdmin'])->name('addAdmin');
+Route::post('/lock-room', [AdminController::class, 'lockRoom'])->name('lockRoom');
+Route::post('/play-playlist', [AdminController::class, 'playPlaylist'])->name('playPlaylist');
+Route::post('/delete-room', [AdminController::class, 'deleteRoom'])->name('deleteRoom');

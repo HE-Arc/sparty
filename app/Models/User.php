@@ -29,4 +29,19 @@ class User extends Model
     //     'password',
     //     'remember_token',
     // ];
+
+    public function roomsWhereAdmin()
+    {
+        return $this->belongsToMany(Room::class, 'admins');
+    }
+
+    public function isAdmin($room)
+    {
+        if ($room->user_id == $this->id)
+        {
+            return true;
+        }
+
+        return $this->roomsWhereAdmin()->find($room->id) != null;
+    }
 }
