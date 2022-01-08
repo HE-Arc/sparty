@@ -17,6 +17,7 @@
     Just connect your Spotify account, create a room and share it!
   </p>
 
+  <Link v-if="room_id" href="/room" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Join last room</Link>
   <Link href="/joinRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Join a room</Link>
   <Link v-if="username" href="/createRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Create a room</Link>
   <Link v-else href="/createAccount" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Create an account</Link>
@@ -44,7 +45,8 @@ export default {
   },
   props: {
       username : String,
-      status: String
+      status: String,
+      room_id: String
   },
 };
 </script>

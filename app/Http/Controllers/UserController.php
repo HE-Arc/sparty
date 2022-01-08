@@ -23,7 +23,7 @@ class UserController extends Controller
     public function index()
     {
         $username = Session::get("username");
-        $spotifyUsername = "Not connected yet!";
+        $spotifyUsername = null;
 
         if($username != null)
         {
@@ -33,11 +33,6 @@ class UserController extends Controller
             {
                 $spotify = new SpotifyService($refresh);
                 $spotifyUsername = $spotify->getUserName();
-            }
-
-            if(!$spotifyUsername)
-            {
-                $spotifyUsername = "Not connected yet!";
             }
 
             $username = $username;
@@ -119,6 +114,12 @@ class UserController extends Controller
      */
     public function create()
     {
+        if (Session::has('username'))
+        {
+            Session::flash('status', 'You already have an account!');
+            return Redirect::route('user.index');
+        }
+
         return Inertia::render('Sparty/User/CreateAccount', [
             'status' => Session::get('status'),
             'username' => Session::get('username')

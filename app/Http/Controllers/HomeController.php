@@ -17,7 +17,8 @@ class HomeController extends Controller
     {
         return inertia('Sparty/Home/Index', [
             'status' => Session::get('status'),
-            'username' => Session::get('username')
+            'username' => Session::get('username'),
+            'room_id' => Session::get('room_id')
         ]);
     }
 }

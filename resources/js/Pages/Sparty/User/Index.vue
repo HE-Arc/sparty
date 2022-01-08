@@ -13,32 +13,16 @@
         <breeze-validation-errors class="mb-3"/>
 
         <div class="container-md">
-            <form>
-                <div class="form-group mb-3">
-                    <label for="username" class="titleLabel">Username : </label>
-                    <input id="username" type="text" class="mx-3">
-                    <breeze-button type="submit">Modifiy</breeze-button>
-                </div>
-            </form>
-            <form @submit.prevent="modifyPassword">
-
-                <div class="mb-3">
-                    <breeze-label for="password" value="Password" />
-                    <breeze-input id="password" type="password" />
-                </div>
-
-                <div class="mb-3">
-                    <breeze-label for="password_confirmation" value="Confirm Password" />
-                    <breeze-input id="password_confirmation" type="password" />
-                </div>
-            </form>
             <form @submit.prevent="submit">
                 <div class="form-group mb-3">
                     <label for="spotifyUsername" class="titleLabel">Spotify : </label>
-                    <label id="spotifyUsername" class="titleLabel mx-3">{{spotifyUsername}}</label>
+                    <label v-if="spotifyUsername" id="spotifyUsername" class="titleLabel mx-3">{{spotifyUsername}}</label>
+                    <label v-else id="spotifyUsername" class="titleLabel mx-3">Not connected yet!</label>
                     <breeze-button type="submit">Connection</breeze-button>
                 </div>
             </form>
+
+            <Link v-if="spotifyUsername" href="/createRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Create a room</Link>
         </div>
     </div>
 
