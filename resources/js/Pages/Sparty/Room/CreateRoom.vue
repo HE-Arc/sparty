@@ -49,7 +49,7 @@ import BreezeLabel from '@/Components/Label.vue'
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue'
 import BreezeCheckbox from '@/Components/Checkbox.vue'
 import { Head, Link } from '@inertiajs/inertia-vue3'
-import NavBar from '@/components/sparty/NavBar.vue'
+import NavBar from '@/Components/Sparty/NavBar.vue'
 
 export default {
   components: {

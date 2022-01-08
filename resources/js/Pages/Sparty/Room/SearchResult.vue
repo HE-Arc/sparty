@@ -29,7 +29,7 @@
 import BreezeButton from '@/Components/Button.vue'
 import BreezeInput from '@/Components/Input.vue'
 import { Head, Link } from '@inertiajs/inertia-vue3'
-import NavBar from '@/components/sparty/NavBar.vue'
+import NavBar from '@/Components/Sparty/NavBar.vue'
 
 export default {
   components: {

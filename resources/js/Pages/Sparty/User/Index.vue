@@ -32,7 +32,7 @@
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import BreezeButton from "@/Components/Button.vue";
 import BreezeLabel from '@/Components/Label.vue'
-import NavBar from "@/components/sparty/NavBar.vue";
+import NavBar from "@/Components/Sparty/NavBar.vue";
 import BreezeInput from '@/Components/Input.vue'
 import { Inertia } from '@inertiajs/inertia';
 

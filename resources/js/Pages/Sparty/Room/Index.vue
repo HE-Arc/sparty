@@ -58,15 +58,15 @@
 
 
 <script>
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import BreezeButton from "@/Components/Button.vue";
-import BreezeInput from "@/Components/Input.vue";
-import BreezeLabel from '@/Components/Label.vue';
-import { Inertia } from '@inertiajs/inertia';
+import { Head, Link } from "@inertiajs/inertia-vue3"
+import BreezeButton from "@/Components/Button.vue"
+import BreezeInput from "@/Components/Input.vue"
+import BreezeLabel from '@/Components/Label.vue'
+import { Inertia } from '@inertiajs/inertia'
 import BreezeNavLink from '@/Components/NavLink.vue'
-import MusicComponent from '@/components/sparty/MusicComponent.vue'
-import NavBar from '@/components/sparty/NavBar.vue'
-import CustomButton from '@/components/sparty/CustomButton.vue'
+import MusicComponent from '@/Components/Sparty/MusicComponent.vue'
+import NavBar from '@/Components/Sparty/NavBar.vue'
+import CustomButton from '@/Components/Sparty/CustomButton.vue'
 
 export default {
   components: {
