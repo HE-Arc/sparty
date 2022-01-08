@@ -2,6 +2,10 @@
   <nav-bar></nav-bar>
   <Head title="User Page" />
 
+  <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
+      {{ status }}
+  </div>
+
   <h1 class="text-center">{{username}}</h1>
 
     <div class="text-center">
@@ -66,6 +70,7 @@ export default {
   props: {
       username : String,
       spotifyUsername : String,
+      status : String
   },
 
   methods: {

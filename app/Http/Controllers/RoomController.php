@@ -351,23 +351,46 @@ class RoomController extends Controller
 
     public function checkRoom(Request $request)
     {
+
+        $user = User::where('username', '=', Session::get('username'))->first();
+
         $roomname = $request->input('roomname');
+        $room = Room::where('name', '=', $roomname)->first();
         $password = $request->input('password');
         $hash_password = null;
 
-        if (Room::where('name', '=', $roomname)->exists())
-        {
-            $hash_password = Room::where('name', '=', $roomname)->first()->password;
-        }
 
-        if ($hash_password != null && Hash::check($password, $hash_password))
+        if ($room != null)
         {
-            Session::push('room_id', Room::where('name', '=', $roomname)->first()->id);
+            $hash_password = $room->password;
+            $room_id = $room->id;
         }
         else
         {
             Session::flash('status', 'Wrong name or password for the room!');
+            return Redirect::route('joinRoom');
         }
+
+        if ($hash_password != null && Hash::check($password, $hash_password))
+        {
+            if($room->can_join || ($user != null && $user->isAdmin($room)))
+            {
+                Session::put('room_id', $room_id);
+            }
+            else
+            {
+                Session::flash('status', 'The room is not open for you!');
+                return Redirect::route('joinRoom');
+            }
+
+        }
+        else
+        {
+            Session::flash('status', 'Wrong name or password for the room!');
+            return Redirect::route('joinRoom');
+        }
+
+        // Session::put('guest_id', $room->createGuest()->id); TODO
         return Redirect::route('room.index');
     }
 

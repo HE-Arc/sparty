@@ -40,10 +40,11 @@ class UserController extends Controller
                 $spotifyUsername = "Not connected yet!";
             }
 
-            $username = $username[0];
+            $username = $username;
             return inertia('Sparty/User/Index', [
                 'username' => $username,
                 'spotifyUsername' => $spotifyUsername,
+                'status' => Session::get('status'),
             ]);
         }
 
@@ -66,7 +67,7 @@ class UserController extends Controller
 
         if ($hash_password != null && Hash::check($password, $hash_password))
         {
-            Session::push('username', $username);
+            Session::put('username', $username);
         }
         else
         {
@@ -149,7 +150,7 @@ class UserController extends Controller
         event(new Registered($user));
 
         Session::forget('username');
-        Session::push('username', $request->username);
+        Session::put('username', $request->username);
 
         return Redirect::route('user.index');
     }

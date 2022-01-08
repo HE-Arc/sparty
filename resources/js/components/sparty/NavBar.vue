@@ -9,12 +9,24 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav ms-auto">
-        <a class="nav-link text-white" href='user'>UserPage</a>
-        <a class="nav-link text-white" href='user'>Login</a>
-        <a class="nav-link text-white" href='logout'>Logout</a>
+        <Link href="/user" class="nav-link text-white">UserPage</Link>
+        <Link href="/user" class="nav-link text-white">Login</Link>
+        <Link href="/logout" class="nav-link text-white">Logout</Link>
       </div>
     </div>
   </div>
 </nav>
 </template>
 
+
+<script>
+import { Head, Link } from "@inertiajs/inertia-vue3"
+import { Inertia } from '@inertiajs/inertia'
+
+export default {
+  components: {
+    Head,
+    Link,
+  }
+};
+</script>

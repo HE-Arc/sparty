@@ -1,5 +1,6 @@
 <template>
   <Head title="Join room" />
+  <NavBar/>
   <div class="card-body">
 
     <h1 class="text-center">Join a room</h1>
@@ -29,6 +30,7 @@ import BreezeInput from '@/Components/Input.vue'
 import BreezeLabel from '@/Components/Label.vue'
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue'
 import { Head, Link } from '@inertiajs/inertia-vue3'
+import NavBar from '@/components/sparty/NavBar.vue'
 export default {
   components: {
     Head,
@@ -37,6 +39,7 @@ export default {
     BreezeLabel,
     BreezeValidationErrors,
     Link,
+    NavBar,
   },
   props: {
       status: String
@@ -53,7 +56,7 @@ export default {
       submit() {
       this.form
           .post(this.route('checkRoom'), {
-              onSuccess: () => this.form.reset('roomname'),
+              onSuccess: () => this.form.reset('password'),
           })
       }
   }
