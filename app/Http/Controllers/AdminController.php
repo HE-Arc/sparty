@@ -171,7 +171,6 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
-
     private function getRoom()
     {
         if (!Session::has('room_id'))
