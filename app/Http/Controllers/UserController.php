@@ -80,7 +80,7 @@ class UserController extends Controller
     public function logout()
     {
         Session::forget('username');
-        return Redirect::route('user.index');
+        return Redirect::route('home');
     }
 
     public function connection()

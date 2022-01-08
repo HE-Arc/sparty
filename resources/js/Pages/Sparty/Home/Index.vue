@@ -17,7 +17,9 @@
     Just connect your Spotify account, create a room and share it!
   </p>
 
-  <Link href="/joinRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3">Join a room</Link>
+  <Link href="/joinRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Join a room</Link>
+  <Link v-if="username" href="/createRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Create a room</Link>
+  <Link v-else href="/createAccount" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Create an account</Link>
 
   </div>
   </div>

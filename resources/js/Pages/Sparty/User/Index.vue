@@ -21,11 +21,6 @@
                 </div>
             </form>
             <form @submit.prevent="modifyPassword">
-                <!-- <div class="mb-3">
-                    <breeze-label for="password" value="Password"/>
-                    <breeze-input id="password" type="password" class="mx-3" value="AlexLeCon">
-                    <breeze-button type="submit">Modifiy</breeze-button>
-                </div> -->
 
                 <div class="mb-3">
                     <breeze-label for="password" value="Password" />
