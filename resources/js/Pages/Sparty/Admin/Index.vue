@@ -1,6 +1,6 @@
 <template>
   <Head title="Admin"/>
-  <NavBar/>
+  <NavBar :username="username"/>
 
   <div v-if="status" class="alert alert-warning mb-3 rounded-0" role="alert">
     {{status}}
@@ -16,9 +16,9 @@
   </div>
 
   <div class="card-body">
-    
+
   <div class="row">
-  
+
   <div class="col-auto">
   <form v-if="canJoin" @submit.prevent="lockRoom(canJoin)" class="mb-3">
     <breeze-button type="submit" class="btn btn-primary">Lock room</breeze-button>
@@ -87,12 +87,12 @@
 
 <script>
 import {Inertia} from '@inertiajs/inertia';
-import {Head, Link} from "@inertiajs/inertia-vue3";
-import BreezeButton from "@/Components/Button.vue";
-import BreezeInput from "@/Components/Input.vue";
-import BreezeLabel from '@/Components/Label.vue';
+import {Head, Link} from "@inertiajs/inertia-vue3"
+import BreezeButton from "@/Components/Button.vue"
+import BreezeInput from "@/Components/Input.vue"
+import BreezeLabel from '@/Components/Label.vue'
 import BreezeNavLink from '@/Components/NavLink.vue'
-import NavBar from '@/components/sparty/NavBar.vue'
+import NavBar from "@/components/sparty/NavBar.vue"
 
 export default {
     components: {
@@ -109,7 +109,8 @@ export default {
         'status',
         'roomName',
         'nextTracks',
-        'canJoin'
+        'canJoin',
+        'username'
     ],
 
     methods: {

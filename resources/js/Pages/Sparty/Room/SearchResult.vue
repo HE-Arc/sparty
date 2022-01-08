@@ -1,6 +1,6 @@
 <template>
   <Head title="Search" />
-  <NavBar/>
+  <NavBar :username="username"/>
 
   <div class="card-body">
     <div class="container">
@@ -42,6 +42,7 @@ export default {
   props: [
       'trackArray',
       'roomname',
+      'username'
   ],
    data() {
     return {

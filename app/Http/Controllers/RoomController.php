@@ -29,7 +29,7 @@ class RoomController extends Controller
 
         if (!Session::has('room_id'))
         {
-            Session::flash('status', "User doesn't have any room id in the session !");
+            Session::flash('status', 'User doesn\'t have any room id in the session !');
             return Redirect::route('joinRoom');
         }
         else
@@ -92,7 +92,8 @@ class RoomController extends Controller
                 'nextTrack' => $nextTrack,
                 'roomid' => $room_id,
                 'isAdmin' => $isAdmin,
-                'canVote' => $room->max_vote != -1
+                'canVote' => $room->max_vote != -1,
+                'username' => Session::get('username')
             ]);
         }
 
@@ -118,7 +119,8 @@ class RoomController extends Controller
 
         return Inertia::render('Sparty/Room/SearchResult', [
             'trackArray' => $tab,
-            'roomname' => $room->name
+            'roomname' => $room->name,
+            'username' => Session::get('username')
             ]);
     }
 
@@ -138,7 +140,8 @@ class RoomController extends Controller
         }
 
         return Inertia::render('Sparty/Room/CreateRoom', [
-            'status' => Session::get('status')
+            'status' => Session::get('status'),
+            'username' => Session::get('username')
         ]);
     }
 
@@ -198,6 +201,7 @@ class RoomController extends Controller
 
         Session::forget('room_id');
         Session::put('room_id', $room->id);
+        Session::put('guest_id', $room->createGuest()->id);
         Session::flash('status', "Room is created !");
 
         //@TODO regarder sur internet
@@ -213,6 +217,7 @@ class RoomController extends Controller
     public function addMusic(Request $request)
     {
         $errorMsg = '';
+        $guest_ID = -1;
 
         $request->validate([
             'uri' => 'required'
@@ -246,6 +251,7 @@ class RoomController extends Controller
         if (!Session::has('guest_id'))
         {
             $errorMsg = 'Guest has not id !';
+            return Redirect::route('room.index');
         }
         else
         {
@@ -395,6 +401,7 @@ class RoomController extends Controller
     {
         return inertia('Sparty/Room/JoinRoom', [
                 'status' => Session::get('status'),
+                'username' => Session::get('username')
             ]);
     }
 }

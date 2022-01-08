@@ -1,6 +1,10 @@
 <template>
   <Head title="Sparty"/>
-  <NavBar/>
+  <NavBar :username="username"/>
+
+  <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">
+      {{ status }}
+  </div>
 
   <div class="px-4 py-5 my-5 text-center">
 
@@ -35,6 +39,10 @@ export default {
     NavBar,
     BreezeLabel,
     BreezeInput,
-  }
+  },
+  props: {
+      username : String,
+      status: String
+  },
 };
 </script>

@@ -50,6 +50,7 @@ class UserController extends Controller
 
         return Inertia::render('Sparty/User/Login', [
             'status' => Session::get('status'),
+            'username' => Session::get('username')
         ]);
 
     }
@@ -120,6 +121,7 @@ class UserController extends Controller
     {
         return Inertia::render('Sparty/User/CreateAccount', [
             'status' => Session::get('status'),
+            'username' => Session::get('username')
         ]);
     }
 

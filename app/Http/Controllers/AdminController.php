@@ -30,7 +30,8 @@ class AdminController extends Controller
                 'status' => Session::get('status'),
                 'roomName' => $room->name,
                 'nextTracks' => [],
-                'canJoin' => $room->can_join
+                'canJoin' => $room->can_join,
+                'username' => Session::get('username')
             ]);
         }
 
@@ -58,7 +59,8 @@ class AdminController extends Controller
             'status' => Session::get('status'),
             'roomName' => $room->name,
             'nextTracks' => $nextTracks,
-            'canJoin' => $room->can_join
+            'canJoin' => $room->can_join,
+            'username' => Session::get('username')
         ]);
     }
 

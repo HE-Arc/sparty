@@ -1,5 +1,5 @@
 <template>
-  <nav-bar></nav-bar>
+  <nav-bar :username="username"></nav-bar>
   <Head title="Register" />
 
   <div class="card-body">
@@ -70,6 +70,7 @@ export default {
   },
 
   props: {
+    username : String,
     status: String
   },
 

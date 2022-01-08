@@ -1,6 +1,6 @@
 <template>
   <Head title="Room" />
-  <NavBar/>
+  <NavBar :username="username"/>
 
   <div class="card-body">
    <breeze-validation-errors class="mb-3" />
@@ -97,7 +97,8 @@ export default {
         'nextTrack',
         'roomid',
         'isAdmin',
-        'canVote'
+        'canVote',
+        'username'
     ],
    data() {
     return {

@@ -1,6 +1,6 @@
 <template>
   <Head title="Create room" />
-  <NavBar/>
+  <NavBar :username="username"/>
 
   <div class="card-body">
 
@@ -63,6 +63,7 @@ export default {
     NavBar
   },
   props: {
+      username : String,
       status: String
   },
   data() {

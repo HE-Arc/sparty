@@ -1,5 +1,5 @@
 <template>
-  <nav-bar></nav-bar>
+  <nav-bar :username="username"></nav-bar>
   <Head title="Log in" />
 
 
@@ -66,7 +66,8 @@ export default {
   },
 
   props: {
-    status: String
+    status: String,
+    username : String,
   },
 
   data() {
