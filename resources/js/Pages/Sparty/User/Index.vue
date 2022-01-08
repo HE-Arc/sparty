@@ -1,5 +1,5 @@
 <template>
-  <nav-bar></nav-bar>
+  <nav-bar :username="username"></nav-bar>
   <Head title="User Page" />
 
   <div v-if="status" class="alert alert-danger mb-3 rounded-0" role="alert">

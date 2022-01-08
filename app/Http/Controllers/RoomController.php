@@ -30,7 +30,7 @@ class RoomController extends Controller
         if (!Session::has('room_id'))
         {
             Session::flash('status', "User doesn't have any room id in the session !");
-            return Redirect::route('room.create');
+            return Redirect::route('joinRoom');
         }
         else
         {
@@ -245,7 +245,6 @@ class RoomController extends Controller
 
         if (!Session::has('guest_id'))
         {
-            $guest_ID = 7; //@TODO
             $errorMsg = 'Guest has not id !';
         }
         else
@@ -253,16 +252,8 @@ class RoomController extends Controller
             $guest_ID = Session::get('guest_id');
         }
 
-        if($room->addMusic($uri, $guest_ID))
-        {
-            Session::flash('status', 'success added');
-            return Redirect::route('room.index');
-        }
-        else
-        {
-            Session::flash('status', 'Problem occurred while adding the music to the playlist !');
-            return Redirect::route('room.index');
-        }
+        $room->addMusic($uri, $guest_ID);
+        return Redirect::route('room.index');
     }
 
     public function vote(Request $request){
@@ -277,7 +268,7 @@ class RoomController extends Controller
 
         if (Session::get('music_voted') == $request->currentPlaying['uri'])
         {
-            Session::flash('status', 'already voted for this music'); //@TODO mettre dans success
+            Session::flash('status', 'Already voted for this music'); //@TODO mettre dans success
         }
         else
         {
@@ -351,7 +342,6 @@ class RoomController extends Controller
 
     public function checkRoom(Request $request)
     {
-
         $user = User::where('username', '=', Session::get('username'))->first();
 
         $roomname = $request->input('roomname');
@@ -359,9 +349,16 @@ class RoomController extends Controller
         $password = $request->input('password');
         $hash_password = null;
 
-
         if ($room != null)
         {
+            if (Session::has('room_id'))
+            {
+                if (Session::get('room_id') == $room->id)
+                {
+                    return Redirect::route('room.index');
+                }
+            }
+
             $hash_password = $room->password;
             $room_id = $room->id;
         }
@@ -390,7 +387,7 @@ class RoomController extends Controller
             return Redirect::route('joinRoom');
         }
 
-        // Session::put('guest_id', $room->createGuest()->id); TODO
+        Session::put('guest_id', $room->createGuest()->id);
         return Redirect::route('room.index');
     }
 
