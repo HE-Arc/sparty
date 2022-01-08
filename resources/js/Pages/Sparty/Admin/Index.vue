@@ -6,6 +6,7 @@
     {{status}}
   </div>
 
+  <div class="container">
   <div class="p-3">
   <div class="row g-5">
   <div class="col-md-6">
@@ -25,20 +26,24 @@
   </form>
 
   <form v-else @submit.prevent="lockRoom(canJoin)" class="mb-3">
-    <breeze-button type="submit" class="btn btn-primary">Unlock room</breeze-button>
+    <breeze-button type="submit">Unlock room</breeze-button>
   </form>
   </div>
 
   <div class="col-auto">
   <form @submit.prevent="playPlaylist()" class="mb-3">
-    <breeze-button type="submit" class="btn btn-primary">Play music</breeze-button>
+    <breeze-button type="submit">Play music</breeze-button>
   </form>
   </div>
 
   <div class="col-auto">
   <form @submit.prevent="deleteRoom()" class="mb-3">
-    <breeze-button type="submit" class="btn btn-danger">Delete room</breeze-button>
+    <breeze-button type="submit">Delete room</breeze-button>
   </form>
+  </div>
+
+  <div class="col-auto">
+  <Link href="/room" as="button" class="btn btn-dark text-uppercase mb-3">Back to room</Link>
   </div>
 
   </div>
@@ -49,7 +54,7 @@
     <label for="username">Username</label>
     <breeze-input type="text" id="username" v-model="formAdmin.username" required autocomplete="username"/>
     <br>
-    <breeze-button type="submit" class="btn btn-primary">Add admin</breeze-button>
+    <breeze-button type="submit">Add admin</breeze-button>
   </form>
 
   </div>
@@ -68,14 +73,15 @@
     <div class="card-body">
 
     <form @submit.prevent="deleteTrack(track)" class="mb-3">
-      <breeze-button type="submit" class="btn btn-primary">Delete track</breeze-button>
+      <breeze-button type="submit">Delete track</breeze-button>
     </form>
 
     <form v-if="track.guest_name != ''" @submit.prevent="banUser(track)" class="mb-3">
       <h4>User: {{track.guest_name}}</h4>
-      <breeze-button type="submit" class="btn btn-danger">Ban user</breeze-button>
+      <breeze-button type="submit">Ban user</breeze-button>
     </form>
 
+    </div>
     </div>
     </div>
   </div>
