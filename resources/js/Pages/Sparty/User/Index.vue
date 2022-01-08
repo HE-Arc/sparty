@@ -18,7 +18,7 @@
                     <label for="spotifyUsername" class="titleLabel">Spotify : </label>
                     <label v-if="spotifyUsername" id="spotifyUsername" class="titleLabel mx-3">{{spotifyUsername}}</label>
                     <label v-else id="spotifyUsername" class="titleLabel mx-3">Not connected yet!</label>
-                    <breeze-button type="submit">Connection</breeze-button>
+                    <breeze-button v-if="spotifyUsername == null" type="submit">Connection</breeze-button>
                 </div>
             </form>
 
