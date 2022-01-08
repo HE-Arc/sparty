@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Room;
 use App\Models\User;
 use App\Services\SpotifyService;
 use Illuminate\Http\Request;
@@ -56,14 +57,23 @@ class UserController extends Controller
         $password = $request->input('password');
         $hash_password = null;
 
-        if (User::where('username', '=', $username)->exists())
+        $user = User::where('username', '=', $username)->first();
+
+        if ($user)
         {
-            $hash_password = User::where('username', '=', $username)->first()->password;
+            $hash_password = $user->password;
         }
 
         if ($hash_password != null && Hash::check($password, $hash_password))
         {
             Session::put('username', $username);
+
+            $room = Room::where('user_id', '=', $user->id)->first();
+            
+            if ($room)
+            {
+                Session::put('room_id', $room->id);
+            }
         }
         else
         {
