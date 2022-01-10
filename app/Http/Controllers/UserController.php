@@ -28,7 +28,8 @@ class UserController extends Controller
 
         if($username != null)
         {
-            $refresh = User::where('username', '=', $username)->first()->refresh;
+            $user = User::where('username', '=', $username)->first();
+            $refresh = $user->refresh;
 
             if($refresh != null)
             {
@@ -36,11 +37,14 @@ class UserController extends Controller
                 $spotifyUsername = $spotify->getUserName();
             }
 
+            $room = Room::where('user_id', '=', $user->id)->first();
+
             $username = $username;
             return inertia('Sparty/User/Index', [
                 'username' => $username,
                 'spotifyUsername' => $spotifyUsername,
                 'status' => Session::get('status'),
+                'hasRoom' => $room != null
             ]);
         }
 
@@ -67,13 +71,6 @@ class UserController extends Controller
         if ($hash_password != null && Hash::check($password, $hash_password))
         {
             Session::put('username', $username);
-
-            $room = Room::where('user_id', '=', $user->id)->first();
-            
-            if ($room)
-            {
-                Session::put('room_id', $room->id);
-            }
         }
         else
         {
@@ -115,6 +112,23 @@ class UserController extends Controller
         }
 
         return Redirect::route('user.index');
+    }
+
+    public function toMyRoom()
+    {
+        $user = User::where('username', '=', Session::get('username'))->first();
+
+        if ($user)
+        {
+            $room = Room::where('user_id', '=', $user->id)->first();
+
+            if ($room)
+            {
+                Session::put('room_id', $room->id);
+            }
+        }
+
+        return Redirect::route('room.index');
     }
 
     /**

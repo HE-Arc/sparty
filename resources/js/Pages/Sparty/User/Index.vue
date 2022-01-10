@@ -22,7 +22,8 @@
                 </div>
             </form>
 
-            <Link v-if="spotifyUsername" href="/createRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Create a room</Link>
+            <Link v-if="spotifyUsername && !hasRoom" href="/createRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Create a room</Link>
+            <Link v-else-if="hasRoom" href="/toMyRoom" as="button" class="btn btn-primary btn-lg px-4 gap-3 mx-3">Join my room</Link>            
         </div>
     </div>
 
@@ -49,7 +50,8 @@ export default {
   props: {
       username : String,
       spotifyUsername : String,
-      status : String
+      status : String,
+      hasRoom : Boolean
   },
 
   methods: {

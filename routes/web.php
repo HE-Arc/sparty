@@ -46,4 +46,4 @@ Route::post('/play-playlist', [AdminController::class, 'playPlaylist'])->name('p
 Route::post('/delete-room', [AdminController::class, 'deleteRoom'])->name('deleteRoom');
 Route::post('/checkRoom', [RoomController::class, 'checkRoom'])->name('checkRoom');
 Route::get('/joinRoom', [RoomController::class, 'joinRoom'])->name('joinRoom');
-
+Route::get('/toMyRoom', [UserController::class, 'toMyRoom'])->name('toMyRoom');

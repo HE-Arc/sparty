@@ -239,26 +239,33 @@ class RoomController extends Controller
             $errorMsg = 'Room not found !';
         }
 
-        if (!$errorMsg=='')
-        {
-            Session::flash('status', $errorMsg);
-            return Redirect::route('room.index');
-        }
-
         $room_id = Session::get('room_id');
         $room = Room::find($room_id);
 
+        $user = User::where('username', '=', Session::get('username'))->first();
+
+        if ($user && $user->isAdmin($room))
+        {
+            $room->addMusic($uri, -1, true);
+            return Redirect::route('room.index');
+        }
+
         if (!Session::has('guest_id'))
         {
-            $errorMsg = 'Guest has not id !';
-            return Redirect::route('room.index');
+            $errorMsg = 'You did not join the room correctly!';
         }
         else
         {
             $guest_ID = Session::get('guest_id');
         }
 
-        $room->addMusic($uri, $guest_ID);
+        if ($errorMsg != '')
+        {
+            Session::flash('status', $errorMsg);
+            return Redirect::route('room.index');
+        }
+
+        $room->addMusic($uri, $guest_ID, false);
         return Redirect::route('room.index');
     }
 
@@ -376,9 +383,16 @@ class RoomController extends Controller
 
         if ($hash_password != null && Hash::check($password, $hash_password))
         {
-            if($room->can_join || ($user != null && $user->isAdmin($room)))
+            $is_admin = $user != null && $user->isAdmin($room);
+
+            if($room->can_join || $is_admin)
             {
                 Session::put('room_id', $room_id);
+
+                if ($is_admin)
+                {
+                    return Redirect::route('room.index');
+                }
             }
             else
             {

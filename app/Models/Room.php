@@ -139,8 +139,20 @@ class Room extends Model
         return $guest;
     }
 
-    public function addMusic($uri, $guest_id)
+    public function addMusic($uri, $guest_id, $is_admin)
     {
+        if ($is_admin)
+        {
+            if (!$this->addInPlaylist($uri))
+            {
+                Session::flash('status', 'There was an error with Spotify');
+                return false;
+            }
+
+            Session::flash('status', 'Music added');
+            return true;
+        }
+
         if (!Guest::where('id', '=', $guest_id)
                 ->where('room_id', '=', $this->id)
                 ->exists())
