@@ -21,20 +21,19 @@ class User extends Model
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array
+     * Return the rooms where the user is admin
+     * @return BelongsToMany the rooms where admin
      */
-    // protected $hidden = [
-    //     'password',
-    //     'remember_token',
-    // ];
-
     public function roomsWhereAdmin()
     {
         return $this->belongsToMany(Room::class, 'admins');
     }
 
+    /**
+     * Check if the user is admin of the given room
+     * @param Room $room the room to check
+     * @return bool whether the user is admin
+     */
     public function isAdmin($room)
     {
         if ($room->user_id == $this->id)

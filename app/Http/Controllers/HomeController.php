@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Session;
 class HomeController extends Controller
 {
     /**
-     * Show the application dashboard.
+     * Display the homepage
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Response the view
      */
     public function index()
     {

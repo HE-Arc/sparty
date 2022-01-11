@@ -27,6 +27,9 @@ class Room extends Model
         'max_vote'
     ];
 
+    /**
+     * Create the Spotify Service at boot
+     */
     protected static function boot()
     {
         parent::boot();
@@ -37,16 +40,29 @@ class Room extends Model
         });
     }
 
+    /**
+     * Return the user owning this room
+     * @return BelongsTo the owner
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Return the admins of this room
+     * @return BelongsToMany the admins
+     */
     public function admins()
     {
         return $this->belongsToMany(User::class, 'admins');
     }
 
+    /**
+     * Add the given track in the playlist of the room, at the right place
+     * @param string $uri the uri of the track
+     * @return bool whether the track was added
+     */
     private function addInPlaylist($uri)
     {
         $offset = $this->spotify->findOffsetInPlaylist($this->playlist_id, $uri);
@@ -74,6 +90,11 @@ class Room extends Model
         return $this->spotify->addToPlaylist($this->playlist_id, $uri);
     }
 
+    /**
+     * Return the next tracks of the playlist
+     * @param string $max the max number of tracks
+     * @return array the list of tracks
+     */
     public function getNextTracks($max = 10)
     {
         $track_playing = $this->spotify->currentlyPlaying();
@@ -87,6 +108,9 @@ class Room extends Model
         return $this->spotify->getNextTracks($this->playlist_id, $playing_offset, $max);
     }
 
+    /**
+     * Vote to skip and skip the track if necessery
+     */
     public function voteSkip()
     {
         if ($this->max_vote == -1)
@@ -129,6 +153,10 @@ class Room extends Model
         Session::flash('status', $this->max_vote - $this->vote_nb . ' vote(s) left to skip');
     }
 
+    /**
+     * Create a guest linked to this room
+     * @return Guest the new guest
+     */
     public function createGuest()
     {
         $guest = new Guest;
@@ -139,6 +167,13 @@ class Room extends Model
         return $guest;
     }
 
+    /**
+     * Add the track in the playlist and link it to the guest
+     * @param string $uri the uri of the track
+     * @param int $guest_id the id of the guest
+     * @param bool $is_admin whether the user is admin
+     * @return bool whether the track was added
+     */
     public function addMusic($uri, $guest_id, $is_admin)
     {
         if ($is_admin)
@@ -189,6 +224,11 @@ class Room extends Model
         return true;
     }
 
+    /**
+     * Remove the music from the playlist and the music table
+     * @param string $uri the uri of the track
+     * @return bool whether the track was removed
+     */
     public function removeMusic($uri)
     {
         $music = Music::where('uri', '=', $uri)
@@ -211,6 +251,11 @@ class Room extends Model
         return $this->spotify->removeFromPlaylist($this->playlist_id, $uri);
     }
 
+    /**
+     * Ban the given guest and remove the music they added
+     * @param int $guest_id the id of the guest
+     * @return bool whether the guest was banned
+     */
     public function banGuest($guest_id)
     {
         $guest = Guest::where('id', '=', $guest_id)
@@ -236,6 +281,11 @@ class Room extends Model
         return true;
     }
 
+    /**
+     * Add the given user as admin of this room
+     * @param string $username the username of the user
+     * @return bool whether the admin was added
+     */
     public function addAdmin($username)
     {
         $user = User::where('username', '=', $username)->first();

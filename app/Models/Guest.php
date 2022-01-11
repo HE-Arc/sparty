@@ -10,6 +10,11 @@ class Guest extends Model
 {
     use HasFactory;
 
+    /**
+     * Generate a random name probably unique
+     * @param int $word_count the number of words of the name
+     * @return string the generated name
+     */
     public static function generateName($word_count = 3)
     {
         $file = Storage::disk('local')->get(config('sparty.wordlist_location'));

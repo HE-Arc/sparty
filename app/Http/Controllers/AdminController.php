@@ -13,6 +13,11 @@ use App\Models\Room;
 
 class AdminController extends Controller
 {
+    /**
+     * Display the admin page or redirect if not admin
+     *
+     * @return Response the view or a redirection
+     */
     public function index()
     {
         $room = $this->getRoom();
@@ -64,6 +69,11 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * Delete the track with the uri in the request
+     * @param Request $request the request
+     * @return Response the redirection
+     */
     public function deleteTrack(Request $request)
     {
         $room = $this->getRoom();
@@ -81,6 +91,11 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
+    /**
+     * Ban the guest with the guest_id in the request
+     * @param Request $request the request
+     * @return Response the redirection
+     */
     public function banGuest(Request $request)
     {
         $room = $this->getRoom();
@@ -98,6 +113,11 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
+    /**
+     * Add the user with the username in the request
+     * @param Request $request the request
+     * @return Response the redirection
+     */
     public function addAdmin(Request $request)
     {
         $room = $this->getRoom();
@@ -115,6 +135,11 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
+    /**
+     * Lock or unlock the room according to the lock in the request
+     * @param Request $request the request
+     * @return Response the redirection
+     */
     public function lockRoom(Request $request)
     {
         $room = $this->getRoom();
@@ -133,6 +158,10 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
+    /**
+     * Play the playlist associated to the room
+     * @return Response the redirection
+     */
     public function playPlaylist()
     {
         $room = $this->getRoom();
@@ -156,6 +185,10 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
+    /**
+     * Delete the room
+     * @return Response the redirection
+     */
     public function deleteRoom()
     {
         $room = $this->getRoom();
@@ -171,6 +204,10 @@ class AdminController extends Controller
         return Redirect::route('admin');
     }
 
+    /**
+     * Check if the connected user is admin of the room in the session and return it
+     * @return Room|null the room or null if not admin
+     */
     private function getRoom()
     {
         if (!Session::has('room_id'))

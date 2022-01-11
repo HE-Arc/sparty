@@ -42,7 +42,7 @@ class SpotifyService
 
     /**
      * Redirect to the Spotify connection page
-     * @return \Illuminate\Http\RedirectResponse the redirecton to the Spotify connection
+     * @return string the url to the Spotify connection
      */
     public function redirect()
     {
