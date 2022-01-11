@@ -16,13 +16,12 @@ use App\Models\User;
 use GuzzleHttp\Psr7\Uri;
 use App\Jobs\Heartbeat;
 
-
 class RoomController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the room page or redirect if the room not exist
      *
-     * @return \Illuminate\Http\Response
+     * @return Response the view or a redirection
      */
     public function index()
     {
@@ -96,9 +95,13 @@ class RoomController extends Controller
                 'username' => Session::get('username')
             ]);
         }
-
     }
 
+    /**
+     * Search the music with sportify api and check if the room exist with room_id in the request
+     * @param Request $request the request
+     * @return Response the redirection
+     */
     public function search(Request $request)
     {
 
@@ -125,10 +128,10 @@ class RoomController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    * Display the admin page for creating new room
+    *
+    * @return Response the redirection
+    */
     public function create()
     {
         $username = Session::get('username');
@@ -146,10 +149,11 @@ class RoomController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created room in database and check the request.
+     * Create a playlist in Sportify with the api
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request the request
+     * @return Response the redirection
      */
     public function store(Request $request)
     {
@@ -166,7 +170,7 @@ class RoomController extends Controller
         }
 
         $username = Session::get('username');
-        $user = User::where('username', '=', $username)->first(); // TODO test exist
+        $user = User::where('username', '=', $username)->first();
         if ($user == null)
         {
             Session::flash('status', "User not connected !");
@@ -183,7 +187,7 @@ class RoomController extends Controller
         }
 
         $spotify = new SpotifyService($user->refresh);
-        $playlist_id = $spotify->createPlaylist('Sparty ' . $request->roomname); // TODO test not null
+        $playlist_id = $spotify->createPlaylist('Sparty ' . $request->roomname);
         if ($playlist_id == null) {
             Session::flash('status', "User has not linked his Spotify account!");
             return Redirect::route('user.index');
@@ -204,15 +208,14 @@ class RoomController extends Controller
         Session::put('guest_id', $room->createGuest()->id);
         Session::flash('status', "Room is created !");
 
-        //@TODO regarder sur internet
         return Redirect::route('room.index');
     }
 
     /**
      * Add music to the playlist
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request the request
+     * @return Response the redirection
      */
     public function addMusic(Request $request)
     {
@@ -269,6 +272,12 @@ class RoomController extends Controller
         return Redirect::route('room.index');
     }
 
+    /**
+    * Enables to get the vote from the request and to control and add the vote on the current music
+    *
+    * @param Request $request the request
+    * @return Response the redirection
+    */
     public function vote(Request $request){
 
         $room_id = Session::get('room_id');
@@ -281,7 +290,7 @@ class RoomController extends Controller
 
         if (Session::get('music_voted') == $request->currentPlaying['uri'])
         {
-            Session::flash('status', 'Already voted for this music'); //@TODO mettre dans success
+            Session::flash('status', 'Already voted for this music');
         }
         else
         {
@@ -328,11 +337,11 @@ class RoomController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    * Remove the specified room from database with the room_id
+    *
+    * @param int the room id
+    * @return Response the redirection
+    */
     public function destroy($id)
     {
         $room_id = $id;
@@ -353,6 +362,12 @@ class RoomController extends Controller
 
     }
 
+    /**
+    * Check if the connected user can join the room
+    *
+    * @param Request $request the request
+    * @return Response the redirection
+    */
     public function checkRoom(Request $request)
     {
         $user = User::where('username', '=', Session::get('username'))->first();
@@ -411,6 +426,11 @@ class RoomController extends Controller
         return Redirect::route('room.index');
     }
 
+    /**
+    * Redirect on room
+    *
+    * @return Response the redirection
+    */
     public function joinRoom()
     {
         return inertia('Sparty/Room/JoinRoom', [
